@@ -1,3 +1,6 @@
 [submodule "clientside_qt/c-core"]
 	path = clientside_qt/c-core
 	url = https://github.com/pubnub/c-core.git
+[submodule "c-core"]
+	path = c-core
+	url = https://github.com/pubnub/c-core.git
