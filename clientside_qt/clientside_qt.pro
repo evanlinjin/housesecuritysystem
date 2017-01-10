@@ -1,10 +1,18 @@
-QT += qml quick
+QT += qml quick network
 
 CONFIG += c++11
 
-SOURCES += main.cpp
+HEADERS += ../c-core/qt/pubnub_qt.h \
+    messagereceiver.h
+
+SOURCES += main.cpp ../c-core/qt/pubnub_qt.cpp ../c-core/core/pubnub_ccore.c ../c-core/core/pubnub_assert_std.c ../c-core/core/pubnub_json_parse.c ../c-core/core/pubnub_helper.c \
+    messagereceiver.cpp
 
 RESOURCES += qml.qrc
+
+INCLUDEPATH += ../c-core/core ../c-core/qt
+DEPENDPATH += ../c-core/core ../c-core/qt
+
 
 # Additional import path used to resolve QML modules in Qt Creator's code model
 QML_IMPORT_PATH =
