@@ -3,10 +3,10 @@ package main
 import (
 	"net/http"
 
+	"github.com/evanlinjin/housesecuritysystem/dbAccess"
+
 	"bytes"
 	"fmt"
-
-	"./dbAccess"
 )
 
 func apiv0(path string) string { return "/api/v0/" + path }
