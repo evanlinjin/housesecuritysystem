@@ -1,31 +1,26 @@
 package main
 
 import (
-	"log"
 	"net/http"
-	"os"
 
 	"bytes"
-	"database/sql"
 	"fmt"
 
-	_ "github.com/go-sql-driver/mysql"
+	"./dbAccess"
 )
 
-func apiv0(path string) string { return "/api/v1/" + path }
+func apiv0(path string) string { return "/api/v0/" + path }
 
 func init() {
 	http.HandleFunc(apiv0("test"), testHandler)
 }
 
 func testHandler(w http.ResponseWriter, r *http.Request) {
-	connectionName := mustGetenv("CLOUDSQL_CONNECTION_NAME")
-	user := mustGetenv("CLOUDSQL_USER")
-	password := os.Getenv("CLOUDSQL_PASSWORD")
+	cred := dbAccess.GetCredentials()
 
 	w.Header().Set("Content-Type", "text/plain")
 
-	db, err := sql.Open("mysql", fmt.Sprintf("%s:%s@cloudsql(%s)/", user, password, connectionName))
+	db, err := cred.OpenDB("mysql")
 	if err != nil {
 		http.Error(w, fmt.Sprintf("Could not open db: %v", err), 500)
 		return
@@ -51,12 +46,4 @@ func testHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write(buf.Bytes())
 
 	return
-}
-
-func mustGetenv(k string) string {
-	v := os.Getenv(k)
-	if v == "" {
-		log.Panicf("%s environment variable not set.", k)
-	}
-	return v
 }

@@ -7,9 +7,6 @@ import (
 
 	"database/sql"
 
-	"strconv"
-	"time"
-
 	_ "github.com/go-sql-driver/mysql"
 )
 
@@ -45,22 +42,15 @@ func (c *Credentials) CreateUser(username, password string) error {
 	}
 
 	// Check if username is unique.
-	rows, err := db.Query("SELECT username FROM Users WHERE username = ?", username)
+	isUniq, err := checkUniqUsername(db, username)
 	if err != nil {
 		return err
+	} else if isUniq == false {
+		return &AccessUsersError{id: ErrorUsernameNotUnique}
 	}
-	cols, err := rows.Columns()
-	if err != nil {
-		return err
-	}
-	if len(cols) != 0 {
-		// TODO: Needs to return an error.
-		return nil
-	}
-	defer rows.Close()
 
 	// Create new user.
-	_, err = db.Exec("INSERT INTO Users (?, ?, ?)", genUID(), username, password)
+	_, err = db.Exec("INSERT INTO Users (?, ?, ?)", genRandString(20), username, password)
 	if err != nil {
 		return err
 	}
@@ -68,13 +58,46 @@ func (c *Credentials) CreateUser(username, password string) error {
 	return nil
 }
 
+// GetUID obtains the user ID from username and password (if correct).
+func (c *Credentials) GetUID(username, password string) (uid string, err error) {
+	// Open Database.
+	db, err := c.OpenDB("mysql")
+	if err != nil {
+		return
+	}
+	defer db.Close()
+
+	// Find user ID.
+	row := db.QueryRow("SELECT id FROM Users WHERE username = ? AND password = ?", username, password)
+	if err != nil {
+		return
+	}
+	err = row.Scan(&uid)
+	if err != nil {
+		return
+	} else if uid == "" {
+		err = &AccessUsersError{id: ErrorInvalidCredentials}
+	}
+	return
+}
+
+// CheckUniqUsername checks if Username is Unique.
+func (c *Credentials) CheckUniqUsername(username string) (bool, error) {
+	// Open Database.
+	db, err := c.OpenDB("mysql")
+	if err != nil {
+		return false, err
+	}
+	defer db.Close()
+	return checkUniqUsername(db, username)
+}
+
 // OpenDB opens a MySQL Database.
-func (c *Credentials) OpenDB(dbName string) (db *sql.DB, err error) {
-	db, err = sql.Open(dbName, fmt.Sprintf(
+func (c *Credentials) OpenDB(dbName string) (*sql.DB, error) {
+	return sql.Open(dbName, fmt.Sprintf(
 		"%s:%s@cloudsql(%s)/",
 		c.User, c.Password, c.ConnectionName,
 	))
-	return
 }
 
 func mustGetenv(k string) string {
@@ -85,10 +108,18 @@ func mustGetenv(k string) string {
 	return v
 }
 
-func genUID() string {
-	return fmt.Sprintf(
-		"uid%s%s",
-		strconv.FormatInt(time.Now().Unix(), 10),
-		genRandString(7),
-	)
+func checkUniqUsername(db *sql.DB, username string) (bool, error) {
+	// Check if username is unique.
+	rows, err := db.Query("SELECT username FROM Users WHERE username = ?", username)
+	if err != nil {
+		return false, err
+	}
+	defer rows.Close()
+
+	cols, err := rows.Columns()
+	if err != nil {
+		return false, err
+	}
+
+	return (len(cols) == 0), nil
 }
