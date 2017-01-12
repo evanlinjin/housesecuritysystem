@@ -1,49 +1,48 @@
 package main
 
 import (
+	"encoding/json"
+	"io"
+	"io/ioutil"
 	"net/http"
-
-	"github.com/evanlinjin/housesecuritysystem/dbAccess"
-
-	"bytes"
-	"fmt"
 )
 
-func apiv0(path string) string { return "/api/v0/" + path }
-
-func init() {
-	http.HandleFunc(apiv0("test"), testHandler)
+func apiv0(path string) string {
+	return "/api/v0/" + path
 }
 
-func testHandler(w http.ResponseWriter, r *http.Request) {
-	cred := dbAccess.GetCredentials()
+func init() {
+	http.HandleFunc(apiv0("test"), testHandleV0)
+	http.HandleFunc(apiv0("create_user"), createUserHandleV0)
+}
 
-	w.Header().Set("Content-Type", "text/plain")
+/******************************************************************************/
+/* UNIVERSAL ENDPOINT FUNCTIONS                                               */
+/******************************************************************************/
 
-	db, err := cred.OpenDB("mysql")
+func readRequestBody(r *http.Request) []byte {
+	body, err := ioutil.ReadAll(io.LimitReader(r.Body, 1048576))
 	if err != nil {
-		http.Error(w, fmt.Sprintf("Could not open db: %v", err), 500)
-		return
+		panic(err)
+	} else if err = r.Body.Close(); err != nil {
+		panic(err)
 	}
-	defer db.Close()
+	return body
+}
 
-	rows, err := db.Query("SHOW DATABASES")
+func unmarshalRequestBody(w http.ResponseWriter, body []byte, v interface{}) {
+	err := json.Unmarshal(body, &v)
 	if err != nil {
-		http.Error(w, fmt.Sprintf("Could not query db: %v", err), 500)
-		return
+		w.WriteHeader(http.StatusNotModified)
+		encodeResponse(w)
+		panic(err)
 	}
-	defer rows.Close()
+}
 
-	buf := bytes.NewBufferString("Databases:\n")
-	for rows.Next() {
-		dbName := ""
-		if err := rows.Scan(&dbName); err != nil {
-			http.Error(w, fmt.Sprintf("Could not scan result: %v", err), 500)
-			return
-		}
-		fmt.Fprintf(buf, "- %s\n", dbName)
+func encodeResponse(w http.ResponseWriter) (err error) {
+	err = json.NewEncoder(w).Encode(err)
+	if err != nil {
+		panic(err)
 	}
-	w.Write(buf.Bytes())
-
 	return
 }

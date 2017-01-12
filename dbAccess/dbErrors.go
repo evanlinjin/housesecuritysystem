@@ -8,6 +8,8 @@ const (
 	ErrorUsernameNotUnique ErrorID = iota
 	// ErrorInvalidCredentials is when login credentials are incorrect.
 	ErrorInvalidCredentials
+	// ErrorInvalidID is when user ID generated is invalid.
+	ErrorInvalidID
 )
 
 // AccessUsersError represents an error that occurs when attempting User API interaction.
@@ -22,6 +24,8 @@ func (e *AccessUsersError) Error() (msg string) {
 		msg = prefix + "Username not unique."
 	case ErrorInvalidCredentials:
 		msg = prefix + "Login credentials are incorrect."
+	case ErrorInvalidID:
+		msg = prefix + "Generated user ID is invalid."
 	default:
 		msg = prefix + "Unkown error."
 	}
