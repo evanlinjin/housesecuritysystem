@@ -13,6 +13,11 @@ bool UserManagement::testUsernameEmail(QString username) {
 }
 
 bool UserManagement::testUsernameUnique(QString username) {
+    QNetworkRequest request;
+    request.setUrl(QUrl("https://telepool-144405.appspot.com/api/v0/test_un_uniq"));
+    request.setRawHeader("Content-Type", "application/json");
+
+
     return true;
 }
 

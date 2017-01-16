@@ -5,6 +5,12 @@ import QtQuick.Layouts 1.0
 Item {
     id: newUserItem
     property alias usernameField: usernameField
+    property alias usernameErrorText: usernameErrorText
+    property alias passwordErrorText: passwordErrorText
+    property alias confirmPasswordErrorText: confirmPasswordErrorText
+    property alias confirmPasswordField: confirmPasswordField
+    property alias passwordField: passwordField
+    property alias submitButton: submitButton
 
     ColumnLayout {
         id: columnLayout1
@@ -17,9 +23,7 @@ Item {
         Text {
             id: heading
             text: qsTr("Create a new user")
-            style: Text.Normal
-            font.bold: true
-            font.pixelSize: 14
+            font.pointSize: 12
             Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
             verticalAlignment: Text.AlignVCenter
             horizontalAlignment: Text.AlignHCenter
@@ -33,49 +37,89 @@ Item {
             Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
 
             Text {
-                id: text1
+                id: usernameText
                 text: qsTr("Email")
+                Layout.fillWidth: true
                 verticalAlignment: Text.AlignVCenter
-                horizontalAlignment: Text.AlignHCenter
-                font.pixelSize: 11
+                horizontalAlignment: Text.AlignLeft
+
+                Text {
+                    id: usernameErrorText
+                    visible: false
+                    color: "#ab3334"
+                    text: qsTr("Invalid Email")
+                    font.italic: false
+                    anchors.top: parent.top
+                    anchors.topMargin: 0
+                    anchors.right: parent.right
+                    anchors.rightMargin: 0
+                }
             }
 
             TextField {
                 id: usernameField
                 text: ""
-                font.pointSize: 11
+                Layout.fillWidth: true
                 Layout.preferredWidth: 280
                 inputMethodHints: Qt.ImhEmailCharactersOnly
             }
 
             Text {
-                id: text2
+                id: passwordText
                 text: qsTr("Password")
-                font.pixelSize: 11
+                Layout.fillWidth: true
                 verticalAlignment: Text.AlignVCenter
-                horizontalAlignment: Text.AlignHCenter
+                horizontalAlignment: Text.AlignLeft
+
+                Text {
+                    id: passwordErrorText
+                    visible: false
+                    x: 594
+                    y: -63
+                    color: "#ab3334"
+                    text: qsTr("Too Short")
+                    anchors.right: parent.right
+                    font.italic: false
+                    anchors.top: parent.top
+                    anchors.rightMargin: 0
+                    anchors.topMargin: 0
+                }
             }
 
             TextField {
                 id: passwordField
                 text: ""
-                font.pointSize: 11
+                Layout.fillWidth: true
                 echoMode: TextInput.Password
                 Layout.preferredWidth: 280
             }
 
             Text {
-                id: text3
+                id: confirmPasswordText
+                visible: false
                 text: qsTr("Confirm Password")
-                font.pixelSize: 11
+                Layout.fillWidth: true
                 verticalAlignment: Text.AlignVCenter
-                horizontalAlignment: Text.AlignHCenter
+                horizontalAlignment: Text.AlignLeft
+
+                Text {
+                    id: confirmPasswordErrorText
+                    x: 594
+                    y: -126
+                    color: "#ab3334"
+                    text: qsTr("Passwords Do Not Match")
+                    anchors.right: parent.right
+                    font.italic: false
+                    anchors.top: parent.top
+                    anchors.rightMargin: 0
+                    anchors.topMargin: 0
+                }
             }
 
             TextField {
                 id: confirmPasswordField
                 text: ""
-                font.pointSize: 11
+                Layout.fillWidth: true
                 echoMode: TextInput.Password
                 Layout.preferredWidth: 280
             }
@@ -85,7 +129,8 @@ Item {
         Button {
             id: submitButton
             text: qsTr("Submit")
-            Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+            enabled: false
+            Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
         }
 
         Text {
