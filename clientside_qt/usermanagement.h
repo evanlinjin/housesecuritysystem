@@ -18,7 +18,7 @@ private:
     QNetworkAccessManager* nm;
 
 signals:
-    void createUserComplete(QString result);
+    void createUserComplete(bool success, QString msg);
 
 public slots:
     bool testUsernameEmail(QString username);

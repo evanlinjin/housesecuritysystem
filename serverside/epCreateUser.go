@@ -41,14 +41,7 @@ func createUserHandleV0(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Check if Unique Username.
-	isUniq, err := cred.CheckUniqUsername(createUserReq.Username)
-	if err != nil {
-		sendResponse(w, CreateUserResp{
-			Status:   fmt.Sprintf("FAILED: %s", err.Error()),
-			Username: createUserReq.Username,
-		}, http.StatusBadRequest)
-		return
-	}
+	isUniq, _ := cred.CheckUniqUsername(createUserReq.Username)
 	if isUniq == false {
 		sendResponse(w, CreateUserResp{
 			Status:   "FAILED: USERNAME NOT UNIQUE",
@@ -58,7 +51,20 @@ func createUserHandleV0(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Add user to db.
-	err = cred.CreateUser(createUserReq.Username, createUserReq.Password)
+	err := cred.CreateUser(createUserReq.Username, createUserReq.Password)
+	if err != nil {
+		sendResponse(w, CreateUserResp{
+			Status:   fmt.Sprintf("FAILED: %s", err.Error()),
+			Username: createUserReq.Username,
+		}, http.StatusBadRequest)
+		return
+	}
+
+	// Get UID.
+	uid, _ := cred.GetUID(createUserReq.Username, createUserReq.Password)
+
+	// Set up User Confirmation Mechanism.
+	err = cred.GenerateUserConfirmationPortal(createUserReq.Username, uid)
 	if err != nil {
 		sendResponse(w, CreateUserResp{
 			Status:   fmt.Sprintf("FAILED: %s", err.Error()),
@@ -68,11 +74,10 @@ func createUserHandleV0(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Send Success Response.
-	uid, _ := cred.GetUID(createUserReq.Username, createUserReq.Password)
 	sendResponse(w, CreateUserResp{
 		Status:   "SUCCESS",
 		Username: createUserReq.Username,
 		UserID:   uid,
-	}, http.StatusBadRequest)
+	}, http.StatusAccepted)
 	return
 }

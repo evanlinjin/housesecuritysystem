@@ -8,30 +8,12 @@ ApplicationWindow {
     height: 480
     title: qsTr("House Security System")
 
-    SwipeView {
-        id: swipeView
+    StackView {
+        id: stack
         anchors.fill: parent
-        currentIndex: tabBar.currentIndex
-
-        Page1 {
-        }
-
-        Page {
-            Label {
-                text: qsTr("Second page")
-                anchors.centerIn: parent
-            }
-        }
+        initialItem: pageLogin
     }
 
-    footer: TabBar {
-        id: tabBar
-        currentIndex: swipeView.currentIndex
-        TabButton {
-            text: qsTr("Add User")
-        }
-        TabButton {
-            text: qsTr("User List")
-        }
-    }
+    Component {id: pageLogin; PageLogin{} }
+    Component {id: pageNewUser; PageNewUser{} }
 }

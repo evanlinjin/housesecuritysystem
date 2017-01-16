@@ -11,23 +11,43 @@ Item {
     property alias confirmPasswordField: confirmPasswordField
     property alias passwordField: passwordField
     property alias submitButton: submitButton
+    property alias closeButton: closeButton
+    property alias errorText: errorText
 
-    ColumnLayout {
-        id: columnLayout1
-        anchors.rightMargin: 10
-        anchors.leftMargin: 10
-        anchors.bottomMargin: 10
-        anchors.topMargin: 10
-        anchors.fill: parent
+    ToolBar {
+        id: toolBar
+        anchors.top: parent.top
+        anchors.topMargin: 0
+        anchors.right: parent.right
+        anchors.rightMargin: 0
+        anchors.left: parent.left
+        anchors.leftMargin: 0
 
         Text {
             id: heading
             text: qsTr("Create a new user")
-            font.pointSize: 12
+            anchors.fill: parent
             Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
             verticalAlignment: Text.AlignVCenter
             horizontalAlignment: Text.AlignHCenter
         }
+
+        ToolButton {
+            id: closeButton
+            text: qsTr("Back")
+        }
+    }
+
+    ColumnLayout {
+        id: columnLayout1
+        anchors.top: toolBar.bottom
+        anchors.right: parent.right
+        anchors.bottom: parent.bottom
+        anchors.left: parent.left
+        anchors.rightMargin: 10
+        anchors.leftMargin: 10
+        anchors.bottomMargin: 10
+        anchors.topMargin: 10
 
         ColumnLayout {
             id: inputLayout
@@ -96,7 +116,6 @@ Item {
 
             Text {
                 id: confirmPasswordText
-                visible: false
                 text: qsTr("Confirm Password")
                 Layout.fillWidth: true
                 verticalAlignment: Text.AlignVCenter
@@ -104,6 +123,7 @@ Item {
 
                 Text {
                     id: confirmPasswordErrorText
+                    visible: false
                     x: 594
                     y: -126
                     color: "#ab3334"
@@ -142,7 +162,7 @@ Item {
             Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
             Layout.rowSpan: 1
             Layout.columnSpan: 1
-            font.pixelSize: 11
         }
     }
+
 }

@@ -1,7 +1,7 @@
 import QtQuick 2.7
 import UserManagement 1.0
 
-Page1Form {    
+PageNewUserForm {
     usernameField.onTextChanged: {
         usernameErrorText.visible = !userManagement.testUsernameEmail(usernameField.text)
         checkSubmitOkay()
@@ -17,9 +17,17 @@ Page1Form {
         checkSubmitOkay()
     }
 
-    //    submit.onReleased: {
-    //        userManagement.createUser(textFieldUsername.text, "passwprd", "Satellite4080XCDT")
-    //    }
+    submitButton.onPressed: {
+        userManagement.createUser(usernameField.text, passwordField.text, "Satellite4080XCDT")
+        usernameField.enabled = false
+        passwordField.enabled = false
+        confirmPasswordField.enabled = false
+        submitButton.enabled = false
+    }
+
+    closeButton.onClicked: {
+        stack.pop()
+    }
 
     UserManagement {
         id: userManagement
@@ -27,8 +35,16 @@ Page1Form {
     }
 
     Component.onCompleted: {
-        userManagement.createUserComplete.connect(function(str) {
-            console.log("USERMANAGEMENT:", str)
+        userManagement.createUserComplete.connect(function(success, msg) {
+            console.log("userManagement.createUserComplete:", success, msg)
+            if (success === true) {
+                // TODO: Open a window and move on.
+            } else {
+                errorText.text = msg
+                usernameField.enabled = true
+                passwordField.enabled = true
+                confirmPasswordField.enabled = true
+            }
         })
     }
 

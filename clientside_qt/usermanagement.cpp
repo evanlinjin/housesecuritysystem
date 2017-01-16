@@ -37,5 +37,16 @@ void UserManagement::createUser(QString username, QString password, QString supe
 
 void UserManagement::createUserComplete(QNetworkReply* reply) {
     disconnect(nm, SIGNAL(finished(QNetworkReply*)), this, SLOT(createUserComplete(QNetworkReply*)));
-    emit createUserComplete(QString(reply->readAll()));
+
+    QJsonObject replyObj = QJsonDocument::fromJson(reply->readAll()).object();
+    QString status = replyObj["status"].toString().trimmed();
+    QString username = replyObj["username"].toString();
+
+    if (status == "SUCCESS" || status == "OKAY") {
+        QString msg = "Account successfully created. Please check your email "
+                + username + " to enable it!";
+        emit createUserComplete(true, msg);
+    } else {
+        emit createUserComplete(false, status);
+    }
 }
