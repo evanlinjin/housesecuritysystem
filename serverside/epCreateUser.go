@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
 	"os"
 
@@ -14,28 +15,64 @@ type CreateUserReq struct {
 	SuperAccessToken string `json:"super_access_token"`
 }
 
+// CreateUserResp represents a Create User Response.
+type CreateUserResp struct {
+	Status   string `json:"status"` // OKAY, ERROR: ""
+	UserID   string `json:"user_id"`
+	Username string `json:"username"`
+}
+
 func createUserHandleV0(w http.ResponseWriter, r *http.Request) {
-	// Read and store request data.
-	body, createUserReq := readRequestBody(r), CreateUserReq{}
+	// Read and store request data + get db access.
+	createUserReq := CreateUserReq{}
+	body := readRequestBody(r)
+	cred := dbAccess.GetCredentials()
+
 	unmarshalRequestBody(w, body, &createUserReq)
 	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
 
 	// Check Super Access Token.
 	if createUserReq.SuperAccessToken != os.Getenv("SUPER_ACCESS_TOKEN") {
-		w.WriteHeader(http.StatusUnauthorized)
-		w.Write([]byte("UNAUTHORIZED\n"))
+		sendResponse(w, CreateUserResp{
+			Status:   "FAILED: UNAUTHORIZED",
+			Username: createUserReq.Username,
+		}, http.StatusUnauthorized)
+		return
+	}
+
+	// Check if Unique Username.
+	isUniq, err := cred.CheckUniqUsername(createUserReq.Username)
+	if err != nil {
+		sendResponse(w, CreateUserResp{
+			Status:   fmt.Sprintf("FAILED: %s", err.Error()),
+			Username: createUserReq.Username,
+		}, http.StatusBadRequest)
+		return
+	}
+	if isUniq == false {
+		sendResponse(w, CreateUserResp{
+			Status:   "FAILED: USERNAME NOT UNIQUE",
+			Username: createUserReq.Username,
+		}, http.StatusBadRequest)
 		return
 	}
 
 	// Add user to db.
-	if dbAccess.GetCredentials().CreateUser(createUserReq.Username, createUserReq.Password) != nil {
-		w.WriteHeader(http.StatusNotModified)
-		w.Write([]byte("FAILED\n"))
+	err = cred.CreateUser(createUserReq.Username, createUserReq.Password)
+	if err != nil {
+		sendResponse(w, CreateUserResp{
+			Status:   fmt.Sprintf("FAILED: %s", err.Error()),
+			Username: createUserReq.Username,
+		}, http.StatusBadRequest)
 		return
 	}
 
 	// Send Success Response.
-	w.WriteHeader(http.StatusCreated)
-	w.Write([]byte("SUCCESS\n"))
+	uid, _ := cred.GetUID(createUserReq.Username, createUserReq.Password)
+	sendResponse(w, CreateUserResp{
+		Status:   "SUCCESS",
+		Username: createUserReq.Username,
+		UserID:   uid,
+	}, http.StatusBadRequest)
 	return
 }

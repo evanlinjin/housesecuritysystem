@@ -5,14 +5,6 @@ import (
 	"io"
 	"io/ioutil"
 	"net/http"
-<<<<<<< HEAD
-
-	"bytes"
-	"fmt"
-
-	"github.com/evanlinjin/housesecuritysystem/serverside/dbAccess"
-=======
->>>>>>> d89fd319ec814acc8af996c7fcc8a17d55317cfd
 )
 
 func apiv0(path string) string {
@@ -21,6 +13,7 @@ func apiv0(path string) string {
 
 func init() {
 	http.HandleFunc(apiv0("test"), testHandleV0)
+	http.HandleFunc(apiv0("test_un_uniq"), testUsernameUniqHandleV0)
 	http.HandleFunc(apiv0("create_user"), createUserHandleV0)
 }
 
@@ -53,4 +46,14 @@ func encodeResponse(w http.ResponseWriter) (err error) {
 		panic(err)
 	}
 	return
+}
+
+func sendResponse(w http.ResponseWriter, v interface{}, httpStatus int) error {
+	respData, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+	w.WriteHeader(httpStatus)
+	w.Write(respData)
+	return nil
 }
