@@ -1,13 +1,13 @@
 #include "messagereceiver.h"
 
-MessageReceiver::MessageReceiver(QString pubKey, QString subKey, QObject *parent) : QObject(parent)
+MessageReceiver::MessageReceiver(QObject *parent) : QObject(parent)
 {
     // Setup Pubnub Channels.
     pn_channels = new QStringList();
     pn_channels->append("testCh");
 
     // Setup Pubnub Subscriber.
-    pn_subscribe.reset(new pubnub_qt(pubKey, subKey));
+    pn_subscribe.reset(new pubnub_qt(Keys::pnPublish, Keys::pnSubscribe));
     connect(pn_subscribe.data(), SIGNAL(outcome(pubnub_res)),
             this, SLOT(onSubscribe(pubnub_res)));
     pn_subscribe->subscribe(*pn_channels);

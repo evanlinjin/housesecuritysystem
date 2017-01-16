@@ -2,6 +2,7 @@
 #define MESSAGERECEIVER_H
 
 #include "pubnub_qt.h"
+#include "keys.h"
 
 #include <QObject>
 
@@ -9,7 +10,7 @@ class MessageReceiver : public QObject
 {
     Q_OBJECT
 public:
-    explicit MessageReceiver(QString pubKey, QString subKey, QObject *parent = 0);
+    explicit MessageReceiver(QObject *parent = 0);
 
 private:
     QScopedPointer<pubnub_qt> pn_subscribe;

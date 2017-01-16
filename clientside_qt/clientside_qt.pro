@@ -3,10 +3,13 @@ QT += qml quick network
 CONFIG += c++11
 
 HEADERS += ../c-core/qt/pubnub_qt.h \
-    messagereceiver.h
+    messagereceiver.h \
+    keys.h \
+    usermanagement.h
 
 SOURCES += main.cpp ../c-core/qt/pubnub_qt.cpp ../c-core/core/pubnub_ccore.c ../c-core/core/pubnub_assert_std.c ../c-core/core/pubnub_json_parse.c ../c-core/core/pubnub_helper.c \
-    messagereceiver.cpp
+    messagereceiver.cpp \
+    usermanagement.cpp
 
 RESOURCES += qml.qrc
 

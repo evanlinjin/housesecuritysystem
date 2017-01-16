@@ -6,7 +6,7 @@ import (
 	"bytes"
 	"fmt"
 
-	"./dbAccess"
+	"github.com/evanlinjin/housesecuritysystem/serverside/dbAccess"
 )
 
 func apiv0(path string) string { return "/api/v0/" + path }
