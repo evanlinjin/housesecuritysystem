@@ -29,13 +29,13 @@ func testHandleV0(w http.ResponseWriter, r *http.Request) {
 
 	buf := bytes.NewBufferString("Users:\n")
 	for rows.Next() {
-		id, username, password := "", "", ""
+		id, email, pSalt, pHash := "", "", "", ""
 		var active []uint8
-		if err := rows.Scan(&id, &username, &password, &active); err != nil {
+		if err := rows.Scan(&id, &email, &pSalt, &pHash, &active); err != nil {
 			http.Error(w, fmt.Sprintf("Could not scan result: %v", err), 500)
 			return
 		}
-		fmt.Fprintf(buf, "- %s, %s\n", id, username)
+		fmt.Fprintf(buf, "- %s, %s, %s, %s, %v\n", id, email, pSalt, pHash, active)
 	}
 	w.Write(buf.Bytes())
 

@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -19,6 +20,7 @@ func init() {
 	http.HandleFunc(apiv0("create_user"), createUserHandleV0)
 
 	http.HandleFunc(apiv1("create_user"), createUserHandleV1)
+	http.HandleFunc(apiv1("activate_user/"), activateUserHandleV1)
 }
 
 /******************************************************************************/
@@ -64,5 +66,5 @@ func sendResponse(w http.ResponseWriter, v interface{}, httpStatus int) error {
 
 func sendError(w http.ResponseWriter, r *http.Request, format string, args ...interface{}) {
 	log.Errorf(appengine.NewContext(r), format, args)
-	http.Error(w, "An error occurred. Please try again.", http.StatusInternalServerError)
+	http.Error(w, fmt.Sprintf(format, args), http.StatusInternalServerError)
 }
