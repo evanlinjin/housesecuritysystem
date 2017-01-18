@@ -1,12 +1,12 @@
 package main
 
 import (
-	"context"
 	"encoding/json"
 	"io"
 	"io/ioutil"
 	"net/http"
 
+	"google.golang.org/appengine"
 	"google.golang.org/appengine/log"
 )
 
@@ -62,7 +62,7 @@ func sendResponse(w http.ResponseWriter, v interface{}, httpStatus int) error {
 	return nil
 }
 
-func sendError(ctx context.Context, w http.ResponseWriter, format string, args ...interface{}) {
-	log.Errorf(ctx, format, args)
+func sendError(w http.ResponseWriter, r *http.Request, format string, args ...interface{}) {
+	log.Errorf(appengine.NewContext(r), format, args)
 	http.Error(w, "An error occurred. Please try again.", http.StatusInternalServerError)
 }

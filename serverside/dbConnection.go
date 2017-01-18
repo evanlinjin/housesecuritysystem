@@ -54,12 +54,16 @@ type DbConnection struct {
 
 // GetDbConnection returns a DB connection.
 func GetDbConnection() (c *DbConnection, e error) {
+	c = &DbConnection{}
 	c.Db, e = sql.Open("mysql", fmt.Sprintf(
 		"%s:%s@cloudsql(%s)/",
 		os.Getenv("CLOUDSQL_USER"),
 		os.Getenv("CLOUDSQL_PASSWORD"),
 		os.Getenv("CLOUDSQL_CONNECTION_NAME"),
 	))
+	if e != nil {
+		return
+	}
 	_, e = c.Db.Exec(fmt.Sprintf("USE %s", DBNAME))
 	return
 }
@@ -77,8 +81,8 @@ func (c *DbConnection) CreateNewAccount(email, password string) (uid string, e e
 		"CREATE TABLE IF NOT EXISTS Users (%s,%s,%s,%s,%s,%s,%s)",
 		fmt.Sprintf("id CHAR(%d) NOT NULL", LENGTHUSERID),
 		fmt.Sprintf("email VARCHAR(%d) NOT NULL", 255),
-		fmt.Sprintf("passwordSalt TINYINT(%d) unsigned NOT NULL", LENGTHPASSWORDSALT),
-		fmt.Sprintf("passwordHash TINYINT(%d) unsigned NOT NULL", LENGTHPASSWORDHASH),
+		fmt.Sprintf("passwordSalt SMALLINT(%d) unsigned NOT NULL", LENGTHPASSWORDSALT),
+		fmt.Sprintf("passwordHash SMALLINT(%d) unsigned NOT NULL", LENGTHPASSWORDHASH),
 		"enabled BIT(1) NOT NULL",
 		"PRIMARY KEY(id)",
 		"UNIQUE KEY(email)",
@@ -94,8 +98,8 @@ func (c *DbConnection) CreateNewAccount(email, password string) (uid string, e e
 
 	// Create new account.
 	_, e = c.Db.Exec(
-		"INSERT INTO Users (id, email, passwordSalt, passwordHash, enabled) VALUES (?,?,?,?)",
-		uid, pwdSalt, pwdHash, false,
+		"INSERT INTO Users (id, email, passwordSalt, passwordHash, enabled) VALUES (?,?,?,?,?)",
+		uid, email, pwdSalt, pwdHash, false,
 	)
 	return
 }

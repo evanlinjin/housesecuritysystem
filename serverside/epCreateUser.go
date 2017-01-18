@@ -6,7 +6,6 @@ import (
 	"os"
 
 	"github.com/evanlinjin/housesecuritysystem/dbAccess"
-	"google.golang.org/appengine"
 )
 
 // CreateUserReq represents a Create User Request.
@@ -106,12 +105,11 @@ type CreateUserResponse struct {
 
 func createUserHandleV1(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
-	ctx := appengine.NewContext(r)
 
 	// Connect to DB.
 	dbc, e := GetDbConnection()
 	if e != nil {
-		sendError(ctx, w, "Cannot connect to db: %v", e)
+		sendError(w, r, "Cannot connect to db: %v", e)
 		return
 	}
 	defer dbc.Close()
@@ -124,14 +122,14 @@ func createUserHandleV1(w http.ResponseWriter, r *http.Request) {
 	// Add Account to DB.
 	uid, e := dbc.CreateNewAccount(request.Email, request.Password)
 	if e != nil {
-		sendError(ctx, w, "Cannot create new account: %v", e)
+		sendError(w, r, "Cannot create new account: %v", e)
 		return
 	}
 
 	// Create Account Activation Method.
 	e = dbc.CreateAccountActivationMethod(r, request.Email, uid)
 	if e != nil {
-		sendError(ctx, w, "Cannot create account activation method: %v", e)
+		sendError(w, r, "Cannot create account activation method: %v", e)
 		return
 	}
 
