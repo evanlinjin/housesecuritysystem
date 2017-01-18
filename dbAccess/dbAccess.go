@@ -49,7 +49,7 @@ func (c *Credentials) CreateUser(username, password string) error {
 	_, err = db.Exec(fmt.Sprintf(
 		"CREATE TABLE IF NOT EXISTS Users (%s,%s,%s,%s,%s,%s)",
 		"id CHAR(30) NOT NULL",
-		"username TINYTEXT NOT NULL",
+		"username VARCHAR(100) NOT NULL",
 		"password TINYTEXT NOT NULL",
 		"enabled BIT(1) NOT NULL",
 		"PRIMARY KEY(id)",
@@ -104,7 +104,7 @@ func (c *Credentials) CheckUniqUsername(username string) (bool, error) {
 }
 
 // GenerateUserConfirmationPortal creates a method for user to confirm account.
-func (c *Credentials) GenerateUserConfirmationPortal(username, uid string) error {
+func (c *Credentials) GenerateUserConfirmationPortal(r *http.Request, username, uid string) error {
 	// Open Database.
 	db, err := c.OpenDB(ConstDbName)
 	if err != nil {
@@ -116,7 +116,7 @@ func (c *Credentials) GenerateUserConfirmationPortal(username, uid string) error
 	_, err = db.Exec(fmt.Sprintf(
 		"CREATE TABLE IF NOT EXISTS UserConfirmationKeys (%s,%s,%s)",
 		"uid CHAR(30) NOT NULL",
-		"key CHAR(30) NOT NULL",
+		"confKey CHAR(30) NOT NULL",
 		"PRIMARY KEY(uid)",
 	))
 	if err != nil {
@@ -127,28 +127,29 @@ func (c *Credentials) GenerateUserConfirmationPortal(username, uid string) error
 	key := genRandString(30)
 
 	// Add entry to UserConfirmationKeys Table.
-	_, err = db.Exec("INSERT INTO UserConfirmationKeys (uid,key) VALUES (?,?)", uid, key)
+	_, err = db.Exec("INSERT INTO UserConfirmationKeys (uid,confKey) VALUES (?,?)", uid, key)
 	if err != nil {
 		return err
 	}
 
 	// Send confirmation email.
 	confirmMsg := fmt.Sprintf(`
+		Hi there,
+
 		Thank you for creating an account at House Security Systems!
 		Please confirm your email address by clicking on the link below:
 
-		----------
-		https://telepool-144405.appspot.com/api/v0/confirm_user/%s
-		----------
+		https://telepool-144405.appspot.com/api/v0/confirm_user/%s+%s
+
 
 		Kind regards,
 
 
 		Evan Lin
 		Gooseberry Technologies
-	`, key)
-	return mail.Send(
-		appengine.NewContext(&http.Request{}),
+	`, uid, key)
+	err = mail.Send(
+		appengine.NewContext(r),
 		&mail.Message{
 			Sender:  "Gooseberry NoReply <noreply@telepool-144405.appspotmail.com>",
 			To:      []string{username},
@@ -156,6 +157,32 @@ func (c *Credentials) GenerateUserConfirmationPortal(username, uid string) error
 			Body:    confirmMsg,
 		},
 	)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// EnableUser enables an account.
+func (c *Credentials) EnableUser(uid, confKey string) (enabled bool, err error) {
+	// Open Database.
+	db, err := c.OpenDB(ConstDbName)
+	if err != nil {
+		return
+	}
+	defer db.Close()
+
+	// Check if confKey is valid for uid.
+	storedConfKey := ""
+	err = db.QueryRow("SELECT confKey FROM UserConfirmationKeys WHERE uid = ?", uid).Scan(&storedConfKey)
+	if err != nil || confKey != storedConfKey {
+		return
+	}
+
+	// Enable user.
+
+	return
 }
 
 // OpenDB opens a MySQL Database.

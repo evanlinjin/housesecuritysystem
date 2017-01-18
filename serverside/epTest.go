@@ -30,7 +30,8 @@ func testHandleV0(w http.ResponseWriter, r *http.Request) {
 	buf := bytes.NewBufferString("Users:\n")
 	for rows.Next() {
 		id, username, password := "", "", ""
-		if err := rows.Scan(&id, &username, &password); err != nil {
+		var active []uint8
+		if err := rows.Scan(&id, &username, &password, &active); err != nil {
 			http.Error(w, fmt.Sprintf("Could not scan result: %v", err), 500)
 			return
 		}

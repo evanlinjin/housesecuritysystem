@@ -30,6 +30,7 @@ Item {
             Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
             verticalAlignment: Text.AlignVCenter
             horizontalAlignment: Text.AlignHCenter
+            font.pixelSize: 12
         }
 
         ToolButton {
@@ -62,6 +63,7 @@ Item {
                 Layout.fillWidth: true
                 verticalAlignment: Text.AlignVCenter
                 horizontalAlignment: Text.AlignLeft
+                font.pixelSize: 12
 
                 Text {
                     id: usernameErrorText
@@ -73,6 +75,7 @@ Item {
                     anchors.topMargin: 0
                     anchors.right: parent.right
                     anchors.rightMargin: 0
+                    font.pixelSize: 12
                 }
             }
 
@@ -90,6 +93,7 @@ Item {
                 Layout.fillWidth: true
                 verticalAlignment: Text.AlignVCenter
                 horizontalAlignment: Text.AlignLeft
+                font.pixelSize: 12
 
                 Text {
                     id: passwordErrorText
@@ -103,6 +107,7 @@ Item {
                     anchors.top: parent.top
                     anchors.rightMargin: 0
                     anchors.topMargin: 0
+                    font.pixelSize: 12
                 }
             }
 
@@ -120,6 +125,7 @@ Item {
                 Layout.fillWidth: true
                 verticalAlignment: Text.AlignVCenter
                 horizontalAlignment: Text.AlignLeft
+                font.pixelSize: 12
 
                 Text {
                     id: confirmPasswordErrorText
@@ -133,6 +139,7 @@ Item {
                     anchors.top: parent.top
                     anchors.rightMargin: 0
                     anchors.topMargin: 0
+                    font.pixelSize: 12
                 }
             }
 
@@ -162,6 +169,7 @@ Item {
             Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
             Layout.rowSpan: 1
             Layout.columnSpan: 1
+            font.pixelSize: 12
         }
     }
 

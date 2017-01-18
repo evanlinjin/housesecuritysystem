@@ -38,7 +38,7 @@ PageNewUserForm {
         userManagement.createUserComplete.connect(function(success, msg) {
             console.log("userManagement.createUserComplete:", success, msg)
             if (success === true) {
-                // TODO: Open a window and move on.
+                stack.pop()
             } else {
                 errorText.text = msg
                 usernameField.enabled = true

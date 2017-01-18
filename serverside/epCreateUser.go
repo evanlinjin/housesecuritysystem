@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"github.com/evanlinjin/housesecuritysystem/dbAccess"
+	"google.golang.org/appengine"
 )
 
 // CreateUserReq represents a Create User Request.
@@ -61,14 +62,22 @@ func createUserHandleV0(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get UID.
-	uid, _ := cred.GetUID(createUserReq.Username, createUserReq.Password)
-
-	// Set up User Confirmation Mechanism.
-	err = cred.GenerateUserConfirmationPortal(createUserReq.Username, uid)
+	uid, err := cred.GetUID(createUserReq.Username, createUserReq.Password)
 	if err != nil {
 		sendResponse(w, CreateUserResp{
 			Status:   fmt.Sprintf("FAILED: %s", err.Error()),
 			Username: createUserReq.Username,
+		}, http.StatusBadRequest)
+		return
+	}
+
+	// Set up User Confirmation Mechanism.
+	err = cred.GenerateUserConfirmationPortal(r, createUserReq.Username, uid)
+	if err != nil {
+		sendResponse(w, CreateUserResp{
+			Status:   fmt.Sprintf("FAILED: %s", err.Error()),
+			Username: createUserReq.Username,
+			UserID:   uid,
 		}, http.StatusBadRequest)
 		return
 	}
@@ -78,6 +87,59 @@ func createUserHandleV0(w http.ResponseWriter, r *http.Request) {
 		Status:   "SUCCESS",
 		Username: createUserReq.Username,
 		UserID:   uid,
+	}, http.StatusAccepted)
+	return
+}
+
+// CreateUserRequest represents a Create User Request.
+type CreateUserRequest struct {
+	Email    string `json:"email"`
+	Password string `json:"password"`
+}
+
+// CreateUserResponse represents a Create User Response.
+type CreateUserResponse struct {
+	Status string `json:"status"` // OKAY, ERROR: ""
+	UserID string `json:"user_id"`
+	Email  string `json:"email"`
+}
+
+func createUserHandleV1(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
+	ctx := appengine.NewContext(r)
+
+	// Connect to DB.
+	dbc, e := GetDbConnection()
+	if e != nil {
+		sendError(ctx, w, "Cannot connect to db: %v", e)
+		return
+	}
+	defer dbc.Close()
+
+	// Read HTTP Request.
+	request := CreateUserRequest{}
+	body := readRequestBody(r)
+	unmarshalRequestBody(w, body, &request)
+
+	// Add Account to DB.
+	uid, e := dbc.CreateNewAccount(request.Email, request.Password)
+	if e != nil {
+		sendError(ctx, w, "Cannot create new account: %v", e)
+		return
+	}
+
+	// Create Account Activation Method.
+	e = dbc.CreateAccountActivationMethod(r, request.Email, uid)
+	if e != nil {
+		sendError(ctx, w, "Cannot create account activation method: %v", e)
+		return
+	}
+
+	// Send Success Response.
+	sendResponse(w, CreateUserResponse{
+		Status: "SUCCESS",
+		Email:  request.Email,
+		UserID: uid,
 	}, http.StatusAccepted)
 	return
 }

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<items version="2" >
+
+    <item
+        jar="/home/evan/go_ws/src/github.com/evanlinjin/housesecuritysystem/build-clientside_qt-Android_for_armeabi_v7a_GCC_4_9_Qt_5_7_0-Debug/android-build/libs/QtAndroid-bundled.jar"
+        jumboMode="false"
+        revision="25.0.2"
+        sha1="390fdebd973594008623e8e8452b456a9f8023a6">
+        <dex dex="/home/evan/go_ws/src/github.com/evanlinjin/housesecuritysystem/build-clientside_qt-Android_for_armeabi_v7a_GCC_4_9_Qt_5_7_0-Debug/android-build/build/intermediates/pre-dexed/debug/QtAndroid-bundled-a6771b8f863ad012609a4545196928dab5870904.jar" />
+    </item>
+    <item
+        jar="/home/evan/go_ws/src/github.com/evanlinjin/housesecuritysystem/build-clientside_qt-Android_for_armeabi_v7a_GCC_4_9_Qt_5_7_0-Debug/android-build/libs/QtAndroidBearer-bundled.jar"
+        jumboMode="false"
+        revision="25.0.2"
+        sha1="13ba233aa7796e0699c3001bb5ad9cfea0261378">
+        <dex dex="/home/evan/go_ws/src/github.com/evanlinjin/housesecuritysystem/build-clientside_qt-Android_for_armeabi_v7a_GCC_4_9_Qt_5_7_0-Debug/android-build/build/intermediates/pre-dexed/debug/QtAndroidBearer-bundled-462b2917d3c3e1ced98287ba026b1cd5730eef6b.jar" />
+    </item>
+
+</items>
