@@ -21,7 +21,6 @@ Item {
             anchors.fill: parent
             verticalAlignment: Text.AlignVCenter
             horizontalAlignment: Text.AlignHCenter
-            font.pixelSize: 12
         }
     }
 
@@ -45,7 +44,6 @@ Item {
             Text {
                 id: usernameText
                 text: qsTr("Email")
-                font.pixelSize: 12
             }
 
             TextField {
@@ -57,7 +55,6 @@ Item {
             Text {
                 id: passwordText
                 text: qsTr("Password")
-                font.pixelSize: 12
             }
 
             TextField {
@@ -78,7 +75,6 @@ Item {
             text: qsTr("Create a new account")
             font.underline: true
             Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-            font.pixelSize: 12
 
             MouseArea {
                 id: newAccountMouseArea

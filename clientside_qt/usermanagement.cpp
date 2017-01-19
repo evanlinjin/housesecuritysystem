@@ -17,19 +17,17 @@ bool UserManagement::testUsernameUnique(QString username) {
     request.setUrl(QUrl("https://telepool-144405.appspot.com/api/v0/test_un_uniq"));
     request.setRawHeader("Content-Type", "application/json");
 
-
     return true;
 }
 
-void UserManagement::createUser(QString username, QString password, QString superAccessToken) {
+void UserManagement::createUser(QString email, QString password) {
     QNetworkRequest request;
-    request.setUrl(QUrl("https://telepool-144405.appspot.com/api/v0/create_user"));
+    request.setUrl(QUrl("https://telepool-144405.appspot.com/api/v1/create_user"));
     request.setRawHeader("Content-Type", "application/json");
 
     QJsonObject dataObj;
-    dataObj["username"] = QJsonValue(username);
+    dataObj["email"] = QJsonValue(email);
     dataObj["password"] = QJsonValue(password);
-    dataObj["super_access_token"] = QJsonValue(superAccessToken);
 
     connect(nm, SIGNAL(finished(QNetworkReply*)), this, SLOT(createUserComplete(QNetworkReply*)));
     nm->post(request, QJsonDocument(dataObj).toJson());
@@ -40,13 +38,13 @@ void UserManagement::createUserComplete(QNetworkReply* reply) {
 
     QJsonObject replyObj = QJsonDocument::fromJson(reply->readAll()).object();
     QString status = replyObj["status"].toString().trimmed();
-    QString username = replyObj["username"].toString();
+    QString email = replyObj["email"].toString();
 
     if (status == "SUCCESS" || status == "OKAY") {
         QString msg = "Account successfully created. Please check your email "
-                + username + " to enable it!";
+                + email + " to enable it!";
         emit createUserComplete(true, msg);
     } else {
-        emit createUserComplete(false, status);
+        emit createUserComplete(false, QString(reply->readAll()));
     }
 }

@@ -24,7 +24,7 @@ public slots:
     bool testUsernameEmail(QString username);
     bool testUsernameUnique(QString username);
 
-    void createUser(QString username, QString password, QString superAccessToken);
+    void createUser(QString email, QString password);
 
 private slots:
     void createUserComplete(QNetworkReply*);
