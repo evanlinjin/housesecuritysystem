@@ -11,14 +11,10 @@ import (
 	"google.golang.org/appengine/log"
 )
 
-func apiv0(path string) string { return "/api/v0/" + path }
 func apiv1(path string) string { return "/api/v1/" + path }
 
 func init() {
-	http.HandleFunc(apiv0("test"), testHandleV0)
-	http.HandleFunc(apiv0("test_un_uniq"), testUsernameUniqHandleV0)
-	http.HandleFunc(apiv0("create_user"), createUserHandleV0)
-
+	http.HandleFunc(apiv1("test"), testHandleV1)
 	http.HandleFunc(apiv1("create_user"), createUserHandleV1)
 	http.HandleFunc(apiv1("activate_user/"), activateUserHandleV1)
 }

@@ -2,7 +2,9 @@ package main
 
 import (
 	"encoding/base64"
+	"fmt"
 	"math/rand"
+	"time"
 )
 
 func generateRandomString(c int) string {
@@ -15,4 +17,8 @@ func generateRandomBytes(c int) ([]byte, error) {
 	b := make([]byte, c)
 	_, e := rand.Read(b)
 	return b, e
+}
+
+func genUID() string {
+	return fmt.Sprintf("%s-%d", generateRandomString(LENGTHUSERID), time.Now().UnixNano())
 }

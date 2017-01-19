@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"net/http"
 	"os"
-	"time"
 
 	"google.golang.org/appengine"
 	"google.golang.org/appengine/mail"
@@ -18,7 +17,7 @@ import (
 
 const (
 	// DBNAME is the database name.
-	DBNAME = "test"
+	DBNAME = "main"
 	// LENGTHUSERID is the char length of random part of userid.
 	LENGTHUSERID = 21
 	// LENGTHPASSWORDSALT is the char length of password salt.
@@ -75,7 +74,7 @@ func (c *DbConnection) Close() (e error) {
 }
 
 // CreateNewAccount creates a new account.
-func (c *DbConnection) CreateNewAccount(email, password string) (uid string, e error) {
+func (c *DbConnection) CreateNewAccount(uid, email, password string) (e error) {
 	// Instantiate Users Table.
 	_, e = c.Db.Exec(fmt.Sprintf(
 		"CREATE TABLE IF NOT EXISTS Users (%s,%s,%s,%s,%s,%s,%s)",
@@ -84,7 +83,7 @@ func (c *DbConnection) CreateNewAccount(email, password string) (uid string, e e
 		fmt.Sprintf("passwordSalt CHAR(%d) NOT NULL", LENGTHPASSWORDSALT),
 		fmt.Sprintf("passwordHash CHAR(%d) NOT NULL", LENGTHPASSWORDHASH),
 		"enabled BIT(1) NOT NULL",
-		"PRIMARY KEY(id)",
+		"PRIMARY KEY(uid)",
 		"UNIQUE KEY(email)",
 	))
 	if e != nil {
@@ -92,7 +91,6 @@ func (c *DbConnection) CreateNewAccount(email, password string) (uid string, e e
 	}
 
 	// Create new account variables.
-	uid = fmt.Sprintf("%s-%d", generateRandomString(LENGTHUSERID), time.Now().UnixNano())
 	pwdSalt := generateRandomString(LENGTHPASSWORDSALT)
 	pwdHash, _ := bcrypt.GenerateFromPassword([]byte(password+pwdSalt), 10)
 

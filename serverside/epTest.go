@@ -4,25 +4,20 @@ import (
 	"bytes"
 	"fmt"
 	"net/http"
-
-	"github.com/evanlinjin/housesecuritysystem/dbAccess"
 )
 
-func testHandleV0(w http.ResponseWriter, r *http.Request) {
-	cred := dbAccess.GetCredentials()
-
+func testHandleV1(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/plain")
-
-	db, err := cred.OpenDB(dbAccess.ConstDbName)
-	if err != nil {
-		http.Error(w, fmt.Sprintf("Could not open db: %v", err), 500)
+	dbc, e := GetDbConnection()
+	if e != nil {
+		sendError(w, r, "Cannot connect to db: %v", e)
 		return
 	}
-	defer db.Close()
+	defer dbc.Close()
 
-	rows, err := db.Query("SELECT * FROM Users")
-	if err != nil {
-		http.Error(w, fmt.Sprintf("Could not query db: %v", err), 500)
+	rows, e := dbc.Db.Query("SELECT * FROM Users")
+	if e != nil {
+		sendError(w, r, "Cannot query db: %v", e)
 		return
 	}
 	defer rows.Close()
