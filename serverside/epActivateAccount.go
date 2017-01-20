@@ -23,9 +23,6 @@ func activateUserHandleV1(w http.ResponseWriter, r *http.Request) {
 	// Check if activation key is valid.
 	valid, _ := dbc.CheckActivationURL(uid, keyPass)
 	if valid == false {
-		/* DEBUG START */
-
-		/* DEBUG END */
 		sendError(w, r, "Activation URL invalid: %v", strArray)
 		return
 	}

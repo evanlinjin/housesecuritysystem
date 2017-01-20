@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"time"
 
 	"google.golang.org/appengine"
 	"google.golang.org/appengine/mail"
@@ -41,6 +42,7 @@ Please confirm your email address by clicking on the link below:
 https://telepool-144405.appspot.com/api/v1/activate_user/%s+%s
 
 Kind regards,
+
 
 Evan Lin
 Gooseberry Technologies
@@ -96,7 +98,7 @@ func (c *DbConnection) CreateNewAccount(uid, email, password string) (e error) {
 
 	// Create new account.
 	_, e = c.Db.Exec(
-		"INSERT INTO Users (uid, email, passwordSalt, passwordHash, enabled) VALUES (?,?,?,?,?)",
+		"INSERT INTO Users(uid, email, passwordSalt, passwordHash, enabled) VALUES (?,?,?,?,?)",
 		uid, email, pwdSalt, string(pwdHash), false,
 	)
 	return
@@ -180,5 +182,82 @@ func (c *DbConnection) CheckAccountEnabled(uid string) (active bool) {
 	var enabled []uint8
 	row.Scan(&enabled)
 	active = (enabled[0] == 1)
+	return
+}
+
+// CheckLogin obtains uid if details are valid.
+func (c *DbConnection) CheckLogin(email, password string) (uid string, e error) {
+	var passwordSalt, passwordHash string
+	var enabled []byte
+	row := c.Db.QueryRow("SELECT uid, passwordSalt, passwordHash, enabled FROM Users WHERE email = ?", email)
+	e = row.Scan(&uid, &passwordSalt, &passwordHash, &enabled)
+	if e != nil {
+		uid = ""
+		return
+	}
+
+	// Check password.
+	e = bcrypt.CompareHashAndPassword([]byte(passwordHash), []byte(password+passwordSalt))
+	if e != nil {
+		uid = ""
+		return
+	}
+
+	return
+}
+
+// CreateSession creates a new session.
+func (c *DbConnection) CreateSession(uid, sid string) (key string, loginTime int64, e error) {
+	// Instantiate Sessions table.
+	_, e = c.Db.Exec(fmt.Sprintf(
+		"CREATE TABLE IF NOT EXISTS Sessions (%s,%s,%s,%s,%s,%s)",
+		fmt.Sprintf("sid VARCHAR(%d) NOT NULL", 255),
+		fmt.Sprintf("hash CHAR(%d) NOT NULL", LENGTHPASSWORDHASH),
+		fmt.Sprintf("uid VARCHAR(%d) NOT NULL", 255),
+		"loginTime BIGINT(1) NOT NULL",
+		"lastSeenTime BIGINT(1) NOT NULL",
+		"PRIMARY KEY(sid)",
+	))
+	if e != nil {
+		return
+	}
+
+	// Create new session variables.
+	tempKey := generateRandomString(LENGTHPASSWORDSALT)
+	hash, _ := bcrypt.GenerateFromPassword([]byte(tempKey), 10)
+	loginTime = time.Now().Unix()
+
+	// Create new session.
+	_, e = c.Db.Exec(
+		"INSERT INTO Sessions(sid,hash,uid,loginTime,lastSeenTime) VALUES(?,?,?,?,?)",
+		sid, hash, uid, loginTime, loginTime,
+	)
+	if e != nil {
+		return
+	}
+
+	key = tempKey
+	return
+}
+
+// CheckSession checks if session is still active.
+func (c *DbConnection) CheckSession(sid, key string) (active bool, times [2]int64, e error) {
+	var hash string
+	var timeLogin, timeLastSeen int64
+
+	row := c.Db.QueryRow("SELECT hash,loginTime,lastSeenTime FROM Sessions WHERE sid = ?", sid)
+	e = row.Scan(&hash, &timeLogin, &timeLastSeen)
+	if e != nil {
+		return
+	}
+
+	// Check if session key is correct.
+	e = bcrypt.CompareHashAndPassword([]byte(hash), []byte(key))
+	if e != nil {
+		return
+	}
+
+	// Return if session active.
+	active, times[0], times[1] = true, timeLogin, timeLastSeen
 	return
 }

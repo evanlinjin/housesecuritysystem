@@ -1,6 +1,9 @@
 package main
 
-import "net/http"
+import (
+	"fmt"
+	"net/http"
+)
 
 // CreateUserRequest represents a Create User Request.
 type CreateUserRequest struct {
@@ -16,35 +19,41 @@ type CreateUserResponse struct {
 }
 
 func createUserHandleV1(w http.ResponseWriter, r *http.Request) {
+	/* HELPER FUNCTIONS START */
+	sendResponseError := func(httpStatus int, format string, a ...interface{}) {
+		msg := fmt.Sprintf(format, a)
+		sendResponse(w, CreateUserResponse{Status: msg}, httpStatus)
+	}
+	/* HELPER FUNCTIONS END */
+
 	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
 
 	// Connect to DB.
 	dbc, e := GetDbConnection()
 	if e != nil {
-		sendError(w, r, "Cannot connect to db: %v", e)
+		sendResponseError(http.StatusInternalServerError, "Cannot connect to db: %v", e)
 		return
 	}
 	defer dbc.Close()
 
 	// Read HTTP Request.
 	request := CreateUserRequest{}
-	body := readRequestBody(r)
-	unmarshalRequestBody(w, body, &request)
+	unmarshalRequestBody(w, readRequestBody(r), &request)
 
 	// Generate UID.
 	uid := genUID()
 
-	// Create Account Activation Method.
-	e = dbc.CreateAccountActivationMethod(r, request.Email, uid)
-	if e != nil {
-		sendError(w, r, "Cannot create account activation method: %v", e)
-		return
-	}
-
 	// Add Account to DB.
 	e = dbc.CreateNewAccount(uid, request.Email, request.Password)
 	if e != nil {
-		sendError(w, r, "Cannot create new account: %v", e)
+		sendResponseError(http.StatusBadRequest, "Cannot create new account: %v", e)
+		return
+	}
+
+	// Create Account Activation Method.
+	e = dbc.CreateAccountActivationMethod(r, request.Email, uid)
+	if e != nil {
+		sendResponseError(http.StatusInternalServerError, "Cannot create account activation method: %v", e)
 		return
 	}
 
@@ -53,6 +62,6 @@ func createUserHandleV1(w http.ResponseWriter, r *http.Request) {
 		Status: "SUCCESS",
 		Email:  request.Email,
 		UserID: uid,
-	}, http.StatusAccepted)
+	}, http.StatusOK)
 	return
 }
