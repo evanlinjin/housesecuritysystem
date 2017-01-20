@@ -5,6 +5,11 @@ import QtQuick.Layouts 1.0
 Item {
     id: loginItem
     property alias newAccountMouseArea: newAccountMouseArea
+    property alias loginButton: loginButton
+    property alias passwordField: passwordField
+    property alias emailField: emailField
+    property alias emailErrorText: emailErrorText
+    property alias busyIndicator: busyIndicator
 
     ToolBar {
         id: toolBar
@@ -39,15 +44,26 @@ Item {
             id: columnLayout1
             width: 100
             height: 100
-            Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+            Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
 
             Text {
-                id: usernameText
+                id: emailText
                 text: qsTr("Email")
+                Layout.fillWidth: true
+
+                Text {
+                    id: emailErrorText
+                    color: "#ab3334"
+                    text: qsTr("Invalid Login Details")
+                    anchors.top: parent.top
+                    anchors.topMargin: 0
+                    anchors.right: parent.right
+                    anchors.rightMargin: 0
+                }
             }
 
             TextField {
-                id: usernameField
+                id: emailField
                 text: qsTr("")
                 Layout.fillWidth: true
             }
@@ -55,6 +71,7 @@ Item {
             Text {
                 id: passwordText
                 text: qsTr("Password")
+                Layout.fillWidth: true
             }
 
             TextField {
@@ -65,9 +82,19 @@ Item {
         }
 
         Button {
-            id: button1
+            id: loginButton
             text: qsTr("Login")
+            Layout.fillWidth: true
             Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
+
+            BusyIndicator {
+                id: busyIndicator
+                x: 272
+                y: -136
+                running: false
+                anchors.horizontalCenter: parent.horizontalCenter
+                anchors.verticalCenter: parent.verticalCenter
+            }
         }
 
         Text {

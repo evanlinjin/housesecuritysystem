@@ -1,11 +1,11 @@
 import QtQuick 2.7
 import QtQuick.Controls 2.0
 import QtQuick.Layouts 1.0
-import UserManagement 1.0
+import HSS 1.0
 
 PageNewUserForm {
     usernameField.onTextChanged: {
-        usernameErrorText.visible = !userManagement.testUsernameEmail(usernameField.text)
+        usernameErrorText.visible = !newUserManager.testUsernameEmail(usernameField.text)
         checkSubmitOkay()
     }
 
@@ -20,7 +20,7 @@ PageNewUserForm {
     }
 
     submitButton.onPressed: {
-        userManagement.createUser(usernameField.text, passwordField.text, "Satellite4080XCDT")
+        newUserManager.createUser(usernameField.text, passwordField.text, "Satellite4080XCDT")
         usernameField.enabled = false
         passwordField.enabled = false
         confirmPasswordField.enabled = false
@@ -31,8 +31,8 @@ PageNewUserForm {
         stack.pop()
     }
 
-    UserManagement {
-        id: userManagement
+    NewUserManager {
+        id: newUserManager
 
     }
 
@@ -64,12 +64,10 @@ PageNewUserForm {
     }
 
     Component.onCompleted: {
-        userManagement.createUserComplete.connect(function(success, msg) {
-            console.log("userManagement.createUserComplete:", success, msg)
-
-            if (success) {
-                msgText.text = msg
-            } else {
+        newUserManager.createUserComplete.connect(function(success, msg) {
+            console.log("newUserManager.createUserComplete:", success, msg)
+            msgText.text = msg
+            if (success === false) {
                 usernameField.enabled = true
                 passwordField.enabled = true
                 confirmPasswordField.enabled = true

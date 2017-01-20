@@ -1,5 +1,5 @@
-#ifndef USERMANAGEMENT_H
-#define USERMANAGEMENT_H
+#ifndef NEWUSERMANAGER_H
+#define NEWUSERMANAGER_H
 
 #include <QObject>
 #include <QNetworkAccessManager>
@@ -8,11 +8,11 @@
 #include <QJsonObject>
 #include <QJsonDocument>
 
-class UserManagement : public QObject
+class NewUserManager : public QObject
 {
     Q_OBJECT
 public:
-    explicit UserManagement(QObject *parent = 0);
+    explicit NewUserManager(QObject *parent = 0);
 
 private:
     QNetworkAccessManager* nm;
@@ -30,4 +30,4 @@ private slots:
     void createUserComplete(QNetworkReply*);
 };
 
-#endif // USERMANAGEMENT_H
+#endif // NEWUSERMANAGER_H

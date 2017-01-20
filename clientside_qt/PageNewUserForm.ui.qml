@@ -25,7 +25,7 @@ Item {
 
         Text {
             id: heading
-            text: qsTr("Create a new user")
+            text: qsTr("Create a new account")
             anchors.fill: parent
             Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
             verticalAlignment: Text.AlignVCenter
@@ -54,7 +54,7 @@ Item {
             width: 100
             height: 100
             Layout.fillWidth: true
-            Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+            Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
 
             Text {
                 id: usernameText
@@ -146,6 +146,7 @@ Item {
         Button {
             id: submitButton
             text: qsTr("Submit")
+            Layout.fillWidth: true
             enabled: false
             Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
         }

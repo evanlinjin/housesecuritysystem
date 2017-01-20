@@ -1,15 +1,17 @@
-QT += qml quick network
+QT += qml quick network core
 
 CONFIG += c++11
 
 HEADERS += ../c-core/qt/pubnub_qt.h \
     messagereceiver.h \
     keys.h \
-    usermanagement.h
+    newusermanager.h \
+    sessionmanager.h
 
 SOURCES += main.cpp ../c-core/qt/pubnub_qt.cpp ../c-core/core/pubnub_ccore.c ../c-core/core/pubnub_assert_std.c ../c-core/core/pubnub_json_parse.c ../c-core/core/pubnub_helper.c \
     messagereceiver.cpp \
-    usermanagement.cpp
+    newusermanager.cpp \
+    sessionmanager.cpp
 
 RESOURCES += qml.qrc
 

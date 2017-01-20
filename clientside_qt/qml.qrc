@@ -5,5 +5,8 @@
         <file>PageNewUserForm.ui.qml</file>
         <file>PageLogin.qml</file>
         <file>PageLoginForm.ui.qml</file>
+        <file>PageHome.qml</file>
+        <file>PageHomeForm.ui.qml</file>
+        <file>ComponentGridItem.qml</file>
     </qresource>
 </RCC>

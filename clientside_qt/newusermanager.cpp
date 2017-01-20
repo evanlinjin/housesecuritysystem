@@ -1,18 +1,18 @@
-#include "usermanagement.h"
+#include "newusermanager.h"
 
-UserManagement::UserManagement(QObject *parent) : QObject(parent)
+NewUserManager::NewUserManager(QObject *parent) : QObject(parent)
 {
     nm = new QNetworkAccessManager(this);
 }
 
-bool UserManagement::testUsernameEmail(QString username) {
+bool NewUserManager::testUsernameEmail(QString username) {
     QRegExp mailREX("\\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,4}\\b");
     mailREX.setCaseSensitivity(Qt::CaseInsensitive);
     mailREX.setPatternSyntax(QRegExp::RegExp);
     return mailREX.exactMatch(username);
 }
 
-bool UserManagement::testUsernameUnique(QString username) {
+bool NewUserManager::testUsernameUnique(QString username) {
     QNetworkRequest request;
     request.setUrl(QUrl("https://telepool-144405.appspot.com/api/v0/test_un_uniq"));
     request.setRawHeader("Content-Type", "application/json");
@@ -20,7 +20,7 @@ bool UserManagement::testUsernameUnique(QString username) {
     return true;
 }
 
-void UserManagement::createUser(QString email, QString password) {
+void NewUserManager::createUser(QString email, QString password) {
     QNetworkRequest request;
     request.setUrl(QUrl("https://telepool-144405.appspot.com/api/v1/create_user"));
     request.setRawHeader("Content-Type", "application/json");
@@ -33,7 +33,7 @@ void UserManagement::createUser(QString email, QString password) {
     nm->post(request, QJsonDocument(dataObj).toJson());
 }
 
-void UserManagement::createUserComplete(QNetworkReply* reply) {
+void NewUserManager::createUserComplete(QNetworkReply* reply) {
     disconnect(nm, SIGNAL(finished(QNetworkReply*)), this, SLOT(createUserComplete(QNetworkReply*)));
 
     QJsonObject replyObj = QJsonDocument::fromJson(reply->readAll()).object();
@@ -45,6 +45,6 @@ void UserManagement::createUserComplete(QNetworkReply* reply) {
                 + email + " to enable it!";
         emit createUserComplete(true, msg);
     } else {
-        emit createUserComplete(false, QString(reply->readAll()));
+        emit createUserComplete(false, status);
     }
 }
