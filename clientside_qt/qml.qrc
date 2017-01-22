@@ -16,5 +16,6 @@
         <file>PageSettingsAccount.qml</file>
         <file>Loading.qml</file>
         <file>LoadingForm.ui.qml</file>
+        <file>PopupWindow.qml</file>
     </qresource>
 </RCC>

@@ -5,7 +5,7 @@ PageSettingsHomeForm {
 
     listView.model: VisualItemModel {
         ComponentListItem {
-            ln1: "User Account"
+            ln1: "Account"
             ln2: "Mannage your user account."
             onClicked: stack.push(pageSettingsAccount)
         }

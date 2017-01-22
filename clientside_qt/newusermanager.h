@@ -19,7 +19,7 @@ private:
     QNetworkAccessManager* nm;
 
 signals:
-    void createUserComplete(bool success, QString msg);
+    void createUserComplete(QString msg);
     void loadingStart(QString msg);
     void loadingStop();
 

@@ -78,7 +78,7 @@ Item {
             TextField {
                 id: usernameField
                 Layout.fillWidth: true
-                inputMethodHints: Qt.ImhEmailCharactersOnly
+                inputMethodHints: Qt.ImhEmailCharactersOnly | Qt.ImhLowercaseOnly | Qt.ImhNoAutoUppercase
             }
 
             Label {

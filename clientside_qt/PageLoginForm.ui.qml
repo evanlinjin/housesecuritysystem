@@ -65,7 +65,7 @@ Item {
                 id: emailField
                 text: qsTr("")
                 Layout.fillWidth: true
-                inputMethodHints: Qt.ImhEmailCharactersOnly
+                inputMethodHints: Qt.ImhEmailCharactersOnly | Qt.ImhLowercaseOnly | Qt.ImhNoAutoUppercase
             }
 
             Label {

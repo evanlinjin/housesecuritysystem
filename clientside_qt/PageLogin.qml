@@ -1,43 +1,45 @@
 import QtQuick 2.7
 
 PageLoginForm {
-    emailField.onTextChanged: {
-        checkSubmitOkay()
+    emailErrorText {
+        visible: false
     }
 
-    passwordField.onTextChanged: {
-        checkSubmitOkay()
+    emailField {
+        text: session.email
+        onTextChanged: checkSubmitOkay()
+        onAccepted: focusNext(passwordField)
     }
 
-    loginButton.onClicked: {
-//        emailField.enabled = false
-//        passwordField.enabled = false
-//        loginButton.enabled = false
-//        busyIndicator.running = true
-//        loading.start("Logging in...")
-
-        if (!session.login(emailField.text, passwordField.text)) {
-//            emailField.enabled = true
-//            passwordField.enabled = true
-//            loginButton.enabled = true
-//            busyIndicator.running = false
-//            emailErrorText.visible = true
-        }
+    passwordField {
+        onTextChanged: checkSubmitOkay()
+        onAccepted: submit()
     }
 
-    newAccountMouseArea.onClicked: {
-        stack.push(pageNewUser)
+    loginButton {
+        enabled: false
+        onClicked: submit()
     }
 
-    Component.onCompleted: {
-        emailField.text = session.email
-        emailErrorText.visible = false
-        loginButton.enabled = false
+    newAccountMouseArea {
+        onClicked: stack.push(pageNewUser)
     }
 
     function checkSubmitOkay() {
         emailErrorText.visible = false
-        loginButton.enabled = (emailField.text != "" &&
-                passwordField.text.length >= 6)
+        loginButton.enabled = (emailField.text != ""
+                               && passwordField.text.length >= 6)
+        return loginButton.enabled
+    }
+
+    function focusNext(what) {
+        what.selectAll()
+        what.forceActiveFocus()
+    }
+
+    function submit() {
+        if (checkSubmitOkay()) {
+            session.login(emailField.text.toLowerCase(), passwordField.text)
+        }
     }
 }

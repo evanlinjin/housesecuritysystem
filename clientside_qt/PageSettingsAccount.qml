@@ -1,13 +1,13 @@
 import QtQuick 2.7
 
 PageSettingsHomeForm {
-    toolbar.text: "Settings > User Account"
+    toolbar.text: "Settings <b>></b> Account"
 
     listView.model: VisualItemModel {
         ComponentListItem {
             ln1: "Logout"
-            ln2: "Delete the current session."
-            onClicked: session.logout();
+            height: 60
+            onClicked: session.logout()
         }
     }
 }

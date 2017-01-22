@@ -4,71 +4,49 @@ import QtQuick.Layouts 1.3
 import HSS 1.0
 
 PageNewUserForm {
-    usernameField.onTextChanged: {
-        usernameErrorText.visible = !newUserManager.testUsernameEmail(usernameField.text)
-        checkSubmitOkay()
+    usernameField {
+        onTextChanged: {
+            usernameErrorText.visible = !newUserManager.testUsernameEmail(usernameField.text)
+            checkSubmitOkay()
+        }
+        onAccepted: focusNext(passwordField)
     }
 
-    passwordField.onTextChanged: {
-        passwordErrorText.visible = passwordField.text.length < 6
-        checkSubmitOkay()
+    passwordField {
+        onTextChanged: {
+            passwordErrorText.visible = passwordField.text.length < 6
+            checkSubmitOkay()
+        }
+        onAccepted: focusNext(confirmPasswordField)
     }
 
-    confirmPasswordField.onTextChanged: {
-        confirmPasswordErrorText.visible = (passwordField.text !== confirmPasswordField.text)
-        checkSubmitOkay()
+    confirmPasswordField {
+        onTextChanged: {
+            confirmPasswordErrorText.visible = (passwordField.text !== confirmPasswordField.text)
+            checkSubmitOkay()
+        }
+        onAccepted: submit()
     }
 
-    submitButton.onPressed: {
-        newUserManager.createUser(usernameField.text, passwordField.text, "Satellite4080XCDT")
+    submitButton {
+        onClicked: submit()
     }
 
-    closeButton.onClicked: {
-        stack.pop()
+    closeButton {
+        onClicked: stack.pop()
     }
 
     NewUserManager {
         id: newUserManager
-
         Component.onCompleted: {
-            createUserComplete.connect(function(success, msg) {
-                console.log("newUserManager.createUserComplete:", success, msg)
-                msgText.text = msg
-                popup.open()
-            })
+            createUserComplete.connect(popup.openMsg)
             loadingStart.connect(loading.start)
             loadingStop.connect(loading.stop)
         }
-
     }
 
-    Popup {
+    PopupWindow {
         id: popup
-        modal: true
-        focus: true
-        contentHeight: parent.height
-        contentWidth: parent.width
-
-        ColumnLayout {
-            anchors.fill: parent
-            Text {
-                id: msgText
-                text: qsTr("FAILED.")
-                verticalAlignment: Text.AlignVCenter
-                horizontalAlignment: Text.AlignHCenter
-                wrapMode: Text.Wrap
-                Layout.fillWidth: true
-                Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-            }
-
-            Button {
-                id: closeButton
-                text: qsTr("Close")
-                Layout.fillWidth: true
-                Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
-                onClicked: popup.close()
-            }
-        }
         onClosed: stack.pop()
     }
 
@@ -79,5 +57,17 @@ PageNewUserForm {
                                 usernameField.text != "" &&
                                 passwordField.text.length >= 6 &&
                                 passwordField.text === confirmPasswordField.text)
+        return submitButton.enabled
+    }
+
+    function focusNext(what) {
+        what.selectAll()
+        what.forceActiveFocus()
+    }
+
+    function submit() {
+        if (checkSubmitOkay()) {
+            newUserManager.createUser(usernameField.text.toLowerCase(), passwordField.text)
+        }
     }
 }
