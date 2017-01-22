@@ -10,17 +10,18 @@ PageLoginForm {
     }
 
     loginButton.onClicked: {
-        emailField.enabled = false
-        passwordField.enabled = false
-        loginButton.enabled = false
-        busyIndicator.running = true
+//        emailField.enabled = false
+//        passwordField.enabled = false
+//        loginButton.enabled = false
+//        busyIndicator.running = true
+//        loading.start("Logging in...")
 
         if (!session.login(emailField.text, passwordField.text)) {
-            emailField.enabled = true
-            passwordField.enabled = true
-            loginButton.enabled = true
-            busyIndicator.running = false
-            emailErrorText.visible = true
+//            emailField.enabled = true
+//            passwordField.enabled = true
+//            loginButton.enabled = true
+//            busyIndicator.running = false
+//            emailErrorText.visible = true
         }
     }
 

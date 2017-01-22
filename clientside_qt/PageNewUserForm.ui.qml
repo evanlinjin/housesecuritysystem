@@ -77,9 +77,7 @@ Item {
 
             TextField {
                 id: usernameField
-                text: ""
                 Layout.fillWidth: true
-                Layout.preferredWidth: 280
                 inputMethodHints: Qt.ImhEmailCharactersOnly
             }
 
@@ -106,10 +104,8 @@ Item {
 
             TextField {
                 id: passwordField
-                text: ""
                 Layout.fillWidth: true
                 echoMode: TextInput.Password
-                Layout.preferredWidth: 280
             }
 
             Label {

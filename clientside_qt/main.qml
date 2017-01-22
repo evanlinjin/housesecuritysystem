@@ -10,30 +10,56 @@ ApplicationWindow {
     title: qsTr("House Security System")
 
     property int splitNum: width/120
-    property string bgColor0: "#eff0f1"
 
     StackView {
         id: stack
         anchors.fill: parent
-        initialItem: pageLogin
+        initialItem: session.isLoggedIn() ? pageHome : pageLogin
     }
 
-    Component {id: pageLogin; PageLogin{} }
-    Component {id: pageNewUser; PageNewUser{} }
-    Component {id: pageHome; PageHome{} }
-    Component {id: pageSettingsHome; PageSettingsHome{} }
-    Component {id: pageSettingsAccount; PageSettingsAccount{} }
+    Component {
+        id: pageLogin
+        PageLogin{ Component.onCompleted: loading.stop() }
+    }
+    Component {
+        id: pageNewUser
+        PageNewUser{ Component.onCompleted: loading.stop() }
+    }
+    Component {
+        id: pageHome
+        PageHome{ Component.onCompleted: loading.stop() }
+    }
+    Component {
+        id: pageSettingsHome
+        PageSettingsHome{ Component.onCompleted: loading.stop() }
+    }
+    Component {
+        id: pageSettingsAccount
+        PageSettingsAccount{ Component.onCompleted: loading.stop() }
+    }
 
     SessionManager {
         id: session
 
         Component.onCompleted: {
-            var openHome = function() {
-                while (stack.depth > 1) {stack.pop()}
-                stack.replace(stack.initialItem, pageHome)
-            }
-            if (isLoggedIn()) {openHome()}
-            uidChanged.connect(openHome)
+            onLoggedIn.connect(gotoHomePage)
+            onLoggedOut.connect(gotoLoginPage)
+            onLoadingStart.connect(loading.start)
+            onLoadingStop.connect(loading.stop)
         }
+
+        function gotoHomePage() {
+            stack.clear()
+            stack.replace(stack.initialItem, pageHome)
+        }
+
+        function gotoLoginPage() {
+            stack.clear()
+            stack.replace(stack.initialItem, pageLogin)
+        }
+    }
+
+    Loading {
+        id: loading
     }
 }

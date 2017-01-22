@@ -7,6 +7,7 @@
 #include <QNetworkReply>
 #include <QJsonObject>
 #include <QJsonDocument>
+#include <QEventLoop>
 
 class NewUserManager : public QObject
 {
@@ -19,15 +20,14 @@ private:
 
 signals:
     void createUserComplete(bool success, QString msg);
+    void loadingStart(QString msg);
+    void loadingStop();
 
 public slots:
     bool testUsernameEmail(QString username);
     bool testUsernameUnique(QString username);
 
     void createUser(QString email, QString password);
-
-private slots:
-    void createUserComplete(QNetworkReply*);
 };
 
 #endif // NEWUSERMANAGER_H

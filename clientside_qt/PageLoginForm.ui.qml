@@ -9,7 +9,6 @@ Item {
     property alias passwordField: passwordField
     property alias emailField: emailField
     property alias emailErrorText: emailErrorText
-    property alias busyIndicator: busyIndicator
 
     ToolBar {
         id: toolBar
@@ -66,6 +65,7 @@ Item {
                 id: emailField
                 text: qsTr("")
                 Layout.fillWidth: true
+                inputMethodHints: Qt.ImhEmailCharactersOnly
             }
 
             Label {
@@ -78,6 +78,7 @@ Item {
                 id: passwordField
                 text: qsTr("")
                 Layout.fillWidth: true
+                echoMode: TextInput.Password
             }
         }
 
@@ -86,15 +87,6 @@ Item {
             text: qsTr("Login")
             Layout.fillWidth: true
             Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
-
-            BusyIndicator {
-                id: busyIndicator
-                x: 272
-                y: -136
-                running: false
-                anchors.horizontalCenter: parent.horizontalCenter
-                anchors.verticalCenter: parent.verticalCenter
-            }
         }
 
         Label {

@@ -14,5 +14,7 @@
         <file>TempToolbarForm.ui.qml</file>
         <file>ComponentListItem.qml</file>
         <file>PageSettingsAccount.qml</file>
+        <file>Loading.qml</file>
+        <file>LoadingForm.ui.qml</file>
     </qresource>
 </RCC>

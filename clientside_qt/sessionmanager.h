@@ -50,8 +50,15 @@ signals:
     void loginTimeChanged();
     void lastSeenTimeChanged();
 
+    void loggedIn();
+    void loggedOut();
+
+    void loadingStart(QString msg);
+    void loadingStop();
+
 public slots:
     bool login(QString email, QString password);
+    bool logout();
     bool isLoggedIn();
 
 };

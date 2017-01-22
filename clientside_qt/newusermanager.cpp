@@ -20,7 +20,10 @@ bool NewUserManager::testUsernameUnique(QString username) {
     return true;
 }
 
-void NewUserManager::createUser(QString email, QString password) {
+void NewUserManager::createUser(QString email, QString password)
+{
+    emit loadingStart("Creating new account...");
+    // Prepare network request.
     QNetworkRequest request;
     request.setUrl(QUrl("https://telepool-144405.appspot.com/api/v1/create_user"));
     request.setRawHeader("Content-Type", "application/json");
@@ -29,16 +32,20 @@ void NewUserManager::createUser(QString email, QString password) {
     dataObj["email"] = QJsonValue(email);
     dataObj["password"] = QJsonValue(password);
 
-    connect(nm, SIGNAL(finished(QNetworkReply*)), this, SLOT(createUserComplete(QNetworkReply*)));
-    nm->post(request, QJsonDocument(dataObj).toJson());
-}
+    // Send Request.
+    QNetworkReply* reply = nm->post(request, QJsonDocument(dataObj).toJson());
 
-void NewUserManager::createUserComplete(QNetworkReply* reply) {
-    disconnect(nm, SIGNAL(finished(QNetworkReply*)), this, SLOT(createUserComplete(QNetworkReply*)));
+    // Wait for Network Reply.
+    QEventLoop loop;
+    connect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
+    loop.exec();
 
+    // Read network reply.
     QJsonObject replyObj = QJsonDocument::fromJson(reply->readAll()).object();
+    reply->deleteLater();
+
+    // Get reply status.
     QString status = replyObj["status"].toString().trimmed();
-    QString email = replyObj["email"].toString();
 
     if (status == "SUCCESS" || status == "OKAY") {
         QString msg = "Account successfully created. Please check your email "
@@ -47,4 +54,5 @@ void NewUserManager::createUserComplete(QNetworkReply* reply) {
     } else {
         emit createUserComplete(false, status);
     }
+    emit loadingStop();
 }

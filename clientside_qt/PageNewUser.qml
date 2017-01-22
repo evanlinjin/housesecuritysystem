@@ -21,10 +21,6 @@ PageNewUserForm {
 
     submitButton.onPressed: {
         newUserManager.createUser(usernameField.text, passwordField.text, "Satellite4080XCDT")
-        usernameField.enabled = false
-        passwordField.enabled = false
-        confirmPasswordField.enabled = false
-        submitButton.enabled = false
     }
 
     closeButton.onClicked: {
@@ -34,12 +30,24 @@ PageNewUserForm {
     NewUserManager {
         id: newUserManager
 
+        Component.onCompleted: {
+            createUserComplete.connect(function(success, msg) {
+                console.log("newUserManager.createUserComplete:", success, msg)
+                msgText.text = msg
+                popup.open()
+            })
+            loadingStart.connect(loading.start)
+            loadingStop.connect(loading.stop)
+        }
+
     }
 
     Popup {
         id: popup
         modal: true
         focus: true
+        contentHeight: parent.height
+        contentWidth: parent.width
 
         ColumnLayout {
             anchors.fill: parent
@@ -56,25 +64,12 @@ PageNewUserForm {
             Button {
                 id: closeButton
                 text: qsTr("Close")
+                Layout.fillWidth: true
                 Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
                 onClicked: popup.close()
             }
         }
         onClosed: stack.pop()
-    }
-
-    Component.onCompleted: {
-        newUserManager.createUserComplete.connect(function(success, msg) {
-            console.log("newUserManager.createUserComplete:", success, msg)
-            msgText.text = msg
-            if (success === false) {
-                usernameField.enabled = true
-                passwordField.enabled = true
-                confirmPasswordField.enabled = true
-            }
-
-            popup.open()
-        })
     }
 
     function checkSubmitOkay() {

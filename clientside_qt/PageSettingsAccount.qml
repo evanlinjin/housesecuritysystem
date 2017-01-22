@@ -7,7 +7,7 @@ PageSettingsHomeForm {
         ComponentListItem {
             ln1: "Logout"
             ln2: "Delete the current session."
-            onClicked: stack.pop()
+            onClicked: session.logout();
         }
     }
 }
