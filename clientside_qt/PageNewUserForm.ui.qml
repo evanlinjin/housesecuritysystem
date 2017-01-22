@@ -1,6 +1,6 @@
 import QtQuick 2.7
 import QtQuick.Controls 2.0
-import QtQuick.Layouts 1.0
+import QtQuick.Layouts 1.3
 
 Item {
     id: newUserItem
@@ -23,7 +23,7 @@ Item {
         anchors.left: parent.left
         anchors.leftMargin: 0
 
-        Text {
+        Label {
             id: heading
             text: qsTr("Create a new account")
             anchors.fill: parent
@@ -56,14 +56,14 @@ Item {
             Layout.fillWidth: true
             Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
 
-            Text {
+            Label {
                 id: usernameText
                 text: qsTr("Email")
                 Layout.fillWidth: true
                 verticalAlignment: Text.AlignVCenter
                 horizontalAlignment: Text.AlignLeft
 
-                Text {
+                Label {
                     id: usernameErrorText
                     visible: false
                     color: "#ab3334"
@@ -83,14 +83,14 @@ Item {
                 inputMethodHints: Qt.ImhEmailCharactersOnly
             }
 
-            Text {
+            Label {
                 id: passwordText
                 text: qsTr("Password")
                 Layout.fillWidth: true
                 verticalAlignment: Text.AlignVCenter
                 horizontalAlignment: Text.AlignLeft
 
-                Text {
+                Label {
                     id: passwordErrorText
                     visible: false
                     x: 594
@@ -112,14 +112,14 @@ Item {
                 Layout.preferredWidth: 280
             }
 
-            Text {
+            Label {
                 id: confirmPasswordText
                 text: qsTr("Confirm Password")
                 Layout.fillWidth: true
                 verticalAlignment: Text.AlignVCenter
                 horizontalAlignment: Text.AlignLeft
 
-                Text {
+                Label {
                     id: confirmPasswordErrorText
                     visible: false
                     x: 594
@@ -151,7 +151,7 @@ Item {
             Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
         }
 
-        Text {
+        Label {
             id: errorText
             color: "#ab3334"
             text: qsTr("")

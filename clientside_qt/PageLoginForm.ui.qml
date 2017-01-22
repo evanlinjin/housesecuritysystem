@@ -1,6 +1,6 @@
 import QtQuick 2.7
 import QtQuick.Controls 2.0
-import QtQuick.Layouts 1.0
+import QtQuick.Layouts 1.3
 
 Item {
     id: loginItem
@@ -20,7 +20,7 @@ Item {
         anchors.left: parent.left
         anchors.leftMargin: 0
 
-        Text {
+        Label {
             id: heading
             text: qsTr("House Secuirty Login")
             anchors.fill: parent
@@ -46,12 +46,12 @@ Item {
             height: 100
             Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
 
-            Text {
+            Label {
                 id: emailText
                 text: qsTr("Email")
                 Layout.fillWidth: true
 
-                Text {
+                Label {
                     id: emailErrorText
                     color: "#ab3334"
                     text: qsTr("Invalid Login Details")
@@ -68,7 +68,7 @@ Item {
                 Layout.fillWidth: true
             }
 
-            Text {
+            Label {
                 id: passwordText
                 text: qsTr("Password")
                 Layout.fillWidth: true
@@ -97,7 +97,7 @@ Item {
             }
         }
 
-        Text {
+        Label {
             id: newAccountText
             text: qsTr("Create a new account")
             font.underline: true

@@ -261,3 +261,13 @@ func (c *DbConnection) CheckSession(sid, key string) (active bool, times [2]int6
 	active, times[0], times[1] = true, timeLogin, timeLastSeen
 	return
 }
+
+// DeleteSession deletes a session.
+func (c *DbConnection) DeleteSession(uid, sid string) (t int64, e error) {
+	_, e = c.Db.Exec("DELETE FROM Sessions WHERE uid = ? AND sid = ?", uid, sid)
+	if e != nil {
+		return
+	}
+	t = time.Now().Unix()
+	return
+}

@@ -1,4 +1,4 @@
-QT += qml quick network core
+QT += qml quick network core quickcontrols2
 
 CONFIG += c++11
 
@@ -26,3 +26,6 @@ QML_IMPORT_PATH =
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
+
+DISTFILES += \
+    qtquickcontrols2.conf

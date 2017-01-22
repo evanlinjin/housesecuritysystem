@@ -18,6 +18,7 @@ func init() {
 	http.HandleFunc(apiv1("create_user"), createUserHandleV1)
 	http.HandleFunc(apiv1("activate_user/"), activateUserHandleV1)
 	http.HandleFunc(apiv1("login"), loginHandleV1)
+	http.HandleFunc(apiv1("logout"), logoutHandleV1)
 }
 
 /******************************************************************************/

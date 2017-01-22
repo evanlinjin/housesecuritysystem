@@ -1,5 +1,6 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
+#include <QtQuickControls2/QQuickStyle>
 
 #include "messagereceiver.h"
 #include "newusermanager.h"
@@ -11,6 +12,7 @@ int main(int argc, char *argv[])
     QGuiApplication app(argc, argv);
 
     //MessageReceiver msgR();
+    QQuickStyle::setStyle("Universal");
 
     QQmlApplicationEngine engine;
     qmlRegisterType<NewUserManager>("HSS", 1, 0, "NewUserManager");

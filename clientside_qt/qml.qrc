@@ -8,5 +8,11 @@
         <file>PageHome.qml</file>
         <file>PageHomeForm.ui.qml</file>
         <file>ComponentGridItem.qml</file>
+        <file>PageSettingsHome.qml</file>
+        <file>PageSettingsHomeForm.ui.qml</file>
+        <file>TempToolbar.qml</file>
+        <file>TempToolbarForm.ui.qml</file>
+        <file>ComponentListItem.qml</file>
+        <file>PageSettingsAccount.qml</file>
     </qresource>
 </RCC>

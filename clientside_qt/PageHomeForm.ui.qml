@@ -1,6 +1,6 @@
 import QtQuick 2.7
 import QtQuick.Controls 2.0
-import QtQuick.Layouts 1.0
+import QtQuick.Layouts 1.3
 
 Item {
     id: homeItem
@@ -13,7 +13,7 @@ Item {
         anchors.right: parent.right
         anchors.left: parent.left
 
-        Text {
+        Label {
             id: emailText
             text: qsTr("")
             verticalAlignment: Text.AlignVCenter
@@ -26,17 +26,11 @@ Item {
         id: gridView
         clip: true
         anchors.top: toolBar.bottom
-        anchors.topMargin: 5
         anchors.bottom: parent.bottom
-        anchors.bottomMargin: 5
         anchors.right: parent.right
-        anchors.rightMargin: 5
         anchors.left: parent.left
-        anchors.leftMargin: 5
-        delegate: ComponentGridItem {}
-
+        ScrollBar.vertical: ScrollBar {active: true; onActiveChanged: active = true;}
         cellWidth: width/splitNum
         cellHeight: cellWidth
-        ScrollBar.vertical: ScrollBar {}
     }
 }
