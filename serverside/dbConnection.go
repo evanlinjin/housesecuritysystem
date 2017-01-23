@@ -271,3 +271,34 @@ func (c *DbConnection) DeleteSession(uid, sid string) (t int64, e error) {
 	t = time.Now().Unix()
 	return
 }
+
+// GetUserSessions gets the sessions for the provided user.
+func (c *DbConnection) GetUserSessions(uid, sid string) (a []Session, e error) {
+	// Get rows.
+	rows, e := c.Db.Query("SELECT * FROM Sessions WHERE uid = ?", uid)
+	if e != nil {
+		return
+	}
+	defer rows.Close()
+
+	// Scan rows.
+	for rows.Next() {
+		s := Session{}
+		e = rows.Scan(&s.SessionID, &s.SessionKeyHash, &s.UserID, &s.LoginTime, &s.LastSeenTime)
+		if e != nil {
+			return
+		}
+		a = append(a, s)
+	}
+
+	return
+}
+
+// Session represents a user session.
+type Session struct {
+	SessionID      string `json:"session_id"`
+	SessionKeyHash string `json:"session_key_hash"`
+	UserID         string `json:"user_id"`
+	LoginTime      int64  `json:"login_time"`
+	LastSeenTime   int64  `json:"last_seen_time"`
+}

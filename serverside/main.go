@@ -15,10 +15,14 @@ func apiv1(path string) string { return "/api/v1/" + path }
 
 func init() {
 	http.HandleFunc(apiv1("test"), testHandleV1)
+
 	http.HandleFunc(apiv1("create_user"), createUserHandleV1)
 	http.HandleFunc(apiv1("activate_user/"), activateUserHandleV1)
+
 	http.HandleFunc(apiv1("login"), loginHandleV1)
 	http.HandleFunc(apiv1("logout"), logoutHandleV1)
+
+	http.HandleFunc(apiv1("list_user_sessions"), getUserSessionsHandleV1)
 }
 
 /******************************************************************************/
