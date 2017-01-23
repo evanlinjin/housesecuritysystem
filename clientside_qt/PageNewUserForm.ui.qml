@@ -34,7 +34,13 @@ Item {
 
         ToolButton {
             id: closeButton
-            text: qsTr("Back")
+
+            Icon {
+                id: icon
+                name: "back"
+                anchors.horizontalCenter: parent.horizontalCenter
+                anchors.verticalCenter: parent.verticalCenter
+            }
         }
     }
 
@@ -78,7 +84,8 @@ Item {
             TextField {
                 id: usernameField
                 Layout.fillWidth: true
-                inputMethodHints: Qt.ImhEmailCharactersOnly | Qt.ImhLowercaseOnly | Qt.ImhNoAutoUppercase
+                inputMethodHints: Qt.ImhEmailCharactersOnly
+                                  | Qt.ImhLowercaseOnly | Qt.ImhNoAutoUppercase
             }
 
             Label {
@@ -138,7 +145,6 @@ Item {
             }
         }
 
-
         Button {
             id: submitButton
             text: qsTr("Submit")
@@ -157,5 +163,4 @@ Item {
             Layout.columnSpan: 1
         }
     }
-
 }

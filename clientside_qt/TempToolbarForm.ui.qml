@@ -5,6 +5,7 @@ import QtQuick.Layouts 1.3
 Item {
     id: item1
     height: toolBar.height
+    property alias backIcon: backIcon
     property alias heading: heading
     property alias text: heading.text
     property alias backButton: backButton
@@ -13,10 +14,15 @@ Item {
         anchors.fill: parent
         ToolButton {
             id: backButton
-            text: qsTr("Back")
             anchors.bottom: parent.bottom
             anchors.top: parent.top
             anchors.left: parent.left
+
+            Icon {
+                id: backIcon
+                anchors.horizontalCenter: parent.horizontalCenter
+                anchors.verticalCenter: parent.verticalCenter
+            }
         }
 
         Item {

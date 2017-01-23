@@ -5,14 +5,24 @@ import QtQuick.Controls 2.0
 // pageUrl: STRING, Url of page.
 
 ItemDelegate {
-    property string ln1
+    property alias icon: icon.name
+    property string label
 
     width: parent.width/splitNum
-    height: width
+    height: width + 5
+
+    Icon {
+        id: icon
+        size: parent.width/2
+        anchors.centerIn: parent
+        anchors.verticalCenterOffset: -10
+    }
 
     Label {
-        id: label
-        text: ("<h4>%1</h4>").arg(ln1)
-        anchors.centerIn: parent
+        id: lb
+        text: ("%1").arg(label)
+        anchors.top: icon.bottom
+        anchors.topMargin: 10
+        anchors.horizontalCenter: icon.horizontalCenter
     }
 }

@@ -48,11 +48,9 @@ void NewUserManager::createUser(QString email, QString password)
     QString status = replyObj["status"].toString().trimmed();
 
     if (status == "SUCCESS" || status == "OKAY") {
-        QString msg = "Account successfully created. Please check your email "
+        status = "Account successfully created. Please check your email "
                 + email + " to enable it!";
-        emit createUserComplete(msg);
-    } else {
-        emit createUserComplete(status);
     }
+    emit createUserComplete(status);
     emit loadingStop();
 }

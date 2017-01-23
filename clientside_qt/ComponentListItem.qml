@@ -11,7 +11,7 @@ ItemDelegate {
 
     width: parent.width
     text: ln2 === "" ?
-              ("<b>%1</b>").arg(ln1)
+              ("%1").arg(ln1)
             :
               ("<h4>%1</h4><smaller>%2</smaller>").arg(ln1).arg(ln2)
 }

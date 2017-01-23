@@ -17,5 +17,27 @@
         <file>Loading.qml</file>
         <file>LoadingForm.ui.qml</file>
         <file>PopupWindow.qml</file>
+        <file>icons/account.svg</file>
+        <file>icons/add.svg</file>
+        <file>icons/back.svg</file>
+        <file>icons/camera-app.svg</file>
+        <file>icons/close.svg</file>
+        <file>icons/contacts-app.svg</file>
+        <file>icons/gallery-app.svg</file>
+        <file>icons/help.svg</file>
+        <file>icons/home.svg</file>
+        <file>icons/indicator-messages.svg</file>
+        <file>icons/indicator-network.svg</file>
+        <file>icons/indicator-sound.svg</file>
+        <file>icons/info.svg</file>
+        <file>icons/intouch.svg</file>
+        <file>icons/media-player.svg</file>
+        <file>icons/messages-app.svg</file>
+        <file>icons/notification.svg</file>
+        <file>icons/settings.svg</file>
+        <file>icons/share-app.svg</file>
+        <file>icons/system-settings.svg</file>
+        <file>icons/weather.svg</file>
+        <file>Icon.qml</file>
     </qresource>
 </RCC>

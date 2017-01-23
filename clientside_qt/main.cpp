@@ -1,7 +1,9 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
+#include <QtQml>
 #include <QtQuickControls2/QQuickStyle>
 
+#include "keyreceiver.h"
 #include "messagereceiver.h"
 #include "newusermanager.h"
 #include "sessionmanager.h"
@@ -11,10 +13,13 @@ int main(int argc, char *argv[])
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
     QGuiApplication app(argc, argv);
 
-    //MessageReceiver msgR();
+    KeyReceiver* keyReceiver = new KeyReceiver();
+    app.installEventFilter(keyReceiver);
+
     QQuickStyle::setStyle("Universal");
 
     QQmlApplicationEngine engine;
+    engine.rootContext()->setContextProperty("KeyReceiver", keyReceiver);
     qmlRegisterType<NewUserManager>("HSS", 1, 0, "NewUserManager");
     qmlRegisterType<SessionManager>("HSS", 1, 0, "SessionManager");
 

@@ -5,7 +5,8 @@ PageHomeForm {
 
     gridView.model: VisualItemModel {
         ComponentGridItem {
-            ln1: "Settings"
+            icon: "settings"
+            label: "Settings"
             onClicked: stack.push(pageSettingsHome)
         }
     }
