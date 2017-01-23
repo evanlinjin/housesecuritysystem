@@ -1,5 +1,6 @@
 import QtQuick 2.7
 import QtGraphicalEffects 1.0
+import QtQuick.Controls.Universal 2.0
 
 Item {
     width: image.width
@@ -29,6 +30,6 @@ Item {
         id: overlay
         anchors.fill: image
         source: image
-        color: "white"
+        color: Universal.foreground
     }
 }

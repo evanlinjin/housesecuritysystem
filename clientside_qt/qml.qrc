@@ -16,7 +16,6 @@
         <file>PageSettingsAccount.qml</file>
         <file>Loading.qml</file>
         <file>LoadingForm.ui.qml</file>
-        <file>PopupWindow.qml</file>
         <file>icons/account.svg</file>
         <file>icons/add.svg</file>
         <file>icons/back.svg</file>
@@ -39,5 +38,8 @@
         <file>icons/system-settings.svg</file>
         <file>icons/weather.svg</file>
         <file>Icon.qml</file>
+        <file>ConfirmPopupItem.qml</file>
+        <file>ConfirmPopupItemForm.ui.qml</file>
+        <file>ComponentPopup.qml</file>
     </qresource>
 </RCC>

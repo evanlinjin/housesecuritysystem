@@ -1,7 +1,6 @@
 import QtQuick 2.7
 import QtQuick.Controls 2.0
 import QtQuick.Layouts 1.3
-import QtQuick.Controls.Universal 2.0
 import HSS 1.0
 
 ApplicationWindow {
@@ -10,7 +9,7 @@ ApplicationWindow {
     height: 480
     title: qsTr("House Security System")
 
-    Universal.theme: Universal.Dark
+//    Universal.theme: Universal.Dark
 
     property int splitNum: width/120
 

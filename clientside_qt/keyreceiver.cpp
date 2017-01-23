@@ -21,6 +21,5 @@ bool KeyReceiver::eventFilter(QObject* obj, QEvent* event)
 
 void KeyReceiver::updateStackDepth(int v)
 {
-    qDebug() << "Stack Depth is now:" << v;
     this->stackDepth = v;
 }

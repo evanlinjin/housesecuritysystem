@@ -45,9 +45,16 @@ PageNewUserForm {
         }
     }
 
-    PopupWindow {
+    ComponentPopup {
         id: popup
+        titleText: "Message"
+        cancelText: "Close"
         onClosed: stack.pop()
+
+        function openMsg(msg) {
+            bodyText = msg
+            popup.open()
+        }
     }
 
     function checkSubmitOkay() {
