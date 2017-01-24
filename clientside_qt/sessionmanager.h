@@ -9,6 +9,9 @@
 #include <QJsonObject>
 #include <QJsonDocument>
 #include <QEventLoop>
+#include <QSysInfo>
+
+#include "models/sessionsmodel.h"
 
 class SessionManager : public QObject
 {
@@ -41,6 +44,7 @@ public:
 private:
     QSettings* settings;
     QNetworkAccessManager* nm;
+    QString appName, appVersion;
 
 signals:
     void uidChanged();
@@ -60,6 +64,8 @@ public slots:
     bool login(QString email, QString password);
     bool logout();
     bool isLoggedIn();
+
+    SessionsModel* genSessionsModel(QObject *parent = 0);
 
 };
 

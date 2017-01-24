@@ -240,6 +240,33 @@ func (c *DbConnection) CreateSession(uid, sid string) (key string, loginTime int
 	return
 }
 
+// AddSessionInformation adds session information for a session.
+func (c *DbConnection) AddSessionInformation(sid string, ct Client) (e error) {
+	// Instantiate SessionInformation table.
+	_, e = c.Db.Exec(fmt.Sprintf(
+		"CREATE TABLE IF NOT EXISTS SessionInformation (%s,%s,%s,%s,%s,%s)",
+		fmt.Sprintf("sid VARCHAR(%d) NOT NULL", 255),
+		fmt.Sprintf("appName VARCHAR(%d) NOT NULL", 255),
+		fmt.Sprintf("appVersion VARCHAR(%d) NOT NULL", 255),
+		fmt.Sprintf("osName VARCHAR(%d) NOT NULL", 255),
+		fmt.Sprintf("osVersion VARCHAR(%d) NOT NULL", 255),
+		"PRIMARY KEY(sid)",
+	))
+	if e != nil {
+		return
+	}
+
+	// Add a new entry to SessionInformation.
+	_, e = c.Db.Exec(
+		"INSERT INTO SessionInformation(sid,appName,appVersion,osName,osVersion) VALUES(?,?,?,?,?)",
+		sid, ct.AppName, ct.AppVersion, ct.OSName, ct.OSVersion,
+	)
+	if e != nil {
+		return
+	}
+	return
+}
+
 // CheckSession checks if session is still active.
 func (c *DbConnection) CheckSession(sid, key string) (active bool, times [2]int64, e error) {
 	var hash string
@@ -256,15 +283,24 @@ func (c *DbConnection) CheckSession(sid, key string) (active bool, times [2]int6
 	if e != nil {
 		return
 	}
-
-	// Return if session active.
 	active, times[0], times[1] = true, timeLogin, timeLastSeen
+
+	// Update last seen time of session.
+	_, e = c.Db.Exec("UPDATE Sessions SET lastSeenTime = ? WHERE sid = ?", time.Now().Unix(), sid)
+	if e != nil {
+		return
+	}
+
 	return
 }
 
-// DeleteSession deletes a session.
+// DeleteSession deletes a session aling with it's session information.
 func (c *DbConnection) DeleteSession(uid, sid string) (t int64, e error) {
 	_, e = c.Db.Exec("DELETE FROM Sessions WHERE uid = ? AND sid = ?", uid, sid)
+	if e != nil {
+		return
+	}
+	_, e = c.Db.Exec("DELETE FROM SessionInformation WHERE sid = ?", sid)
 	if e != nil {
 		return
 	}
@@ -279,7 +315,7 @@ func (c *DbConnection) GetUserSessions(uid, sid string) (a []Session, e error) {
 	if e != nil {
 		return
 	}
-	defer rows.Close()
+	// defer rows.Close()
 
 	// Scan rows.
 	for rows.Next() {
@@ -289,6 +325,18 @@ func (c *DbConnection) GetUserSessions(uid, sid string) (a []Session, e error) {
 			return
 		}
 		a = append(a, s)
+	}
+	rows.Close()
+
+	// Add Client Info.
+	for i := 0; i < len(a); i++ {
+		cl := Client{}
+		c.Db.Exec(fmt.Sprintf("USE %s", DBNAME))
+		row := c.Db.QueryRow("SELECT appName,appVersion,osName,osVersion FROM SessionInformation WHERE sid = ?", a[i].SessionID)
+		if row.Scan(&cl.AppName, &cl.AppVersion, &cl.OSName, &cl.OSVersion) != nil {
+			continue
+		}
+		a[i].Client = cl
 	}
 
 	return
@@ -301,4 +349,13 @@ type Session struct {
 	UserID         string `json:"user_id"`
 	LoginTime      int64  `json:"login_time"`
 	LastSeenTime   int64  `json:"last_seen_time"`
+	Client         Client `json:"client"`
+}
+
+// Client represents a client.
+type Client struct {
+	AppName    string `json:"app_name"`
+	AppVersion string `json:"app_version"`
+	OSName     string `json:"os_name"`
+	OSVersion  string `json:"os_version"`
 }

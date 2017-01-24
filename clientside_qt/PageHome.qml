@@ -1,7 +1,7 @@
 import QtQuick 2.7
 
 PageHomeForm {
-    emailText.text: session.email
+    emailText.text: Session.email
 
     gridView.model: VisualItemModel {
         ComponentGridItem {

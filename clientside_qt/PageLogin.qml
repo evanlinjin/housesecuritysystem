@@ -6,7 +6,7 @@ PageLoginForm {
     }
 
     emailField {
-        text: session.email
+        text: Session.email
         onTextChanged: checkSubmitOkay()
         onAccepted: focusNext(passwordField)
     }
@@ -39,7 +39,7 @@ PageLoginForm {
 
     function submit() {
         if (checkSubmitOkay()) {
-            session.login(emailField.text.toLowerCase(), passwordField.text)
+            Session.login(emailField.text.toLowerCase(), passwordField.text)
         }
     }
 }

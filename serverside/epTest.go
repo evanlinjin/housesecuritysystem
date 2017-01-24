@@ -57,6 +57,26 @@ func testHandleV1(w http.ResponseWriter, r *http.Request) {
 
 	rows.Close()
 
+	// SHOW ALL SESSION INFORMATION:
+
+	rows, e = dbc.Db.Query("SELECT * FROM SessionInformation")
+	if e != nil {
+		sendError(w, r, "Cannot query db: %v", e)
+		return
+	}
+
+	fmt.Fprintf(buf, "\nSession Information:\n")
+	for rows.Next() {
+		var sid, appName, appVersion, osName, osVersion string
+		if e = rows.Scan(&sid, &appName, &appVersion, &osName, &osVersion); e != nil {
+			http.Error(w, fmt.Sprintf("Could not scan result: %v", e), 500)
+			return
+		}
+		fmt.Fprintf(buf, "- %s, %s, %s, %s, %s\n", sid, appName, appVersion, osName, osVersion)
+	}
+
+	rows.Close()
+
 	w.Write(buf.Bytes())
 
 	return

@@ -1,22 +1,25 @@
-import QtQuick 2.7
-import QtQuick.Controls 2.0
-import QtQuick.Layouts 1.3
+import QtQuick 2.5
+import QtQuick.Controls 2.1
+import QtQuick.Layouts 1.1
+import QtQuick.Controls.Universal 2.1
 import HSS 1.0
 
 ApplicationWindow {
     visible: true
     width: 640
     height: 480
+    minimumWidth: 320
+    minimumHeight: 320
     title: qsTr("House Security System")
 
-//    Universal.theme: Universal.Dark
+    Universal.theme: Universal.Dark
 
     property int splitNum: width/120
 
     StackView {
         id: stack
         anchors.fill: parent
-        initialItem: session.isLoggedIn() ? pageHome : pageLogin
+        initialItem: Session.isLoggedIn() ? pageHome : pageLogin
     }
 
     Component {
@@ -44,8 +47,9 @@ ApplicationWindow {
         PageSettingsAccount{ Component.onCompleted: loading.stop() }
     }
 
-    SessionManager {
-        id: session
+    Component {
+        id: pageSettingsSessions
+        PageSettingsSessions{ Component.onCompleted: loading.stop() }
     }
 
     Loading {
@@ -53,10 +57,10 @@ ApplicationWindow {
     }
 
     Component.onCompleted: {
-        session.onLoggedIn.connect(gotoHomePage)
-        session.onLoggedOut.connect(gotoLoginPage)
-        session.onLoadingStart.connect(loading.start)
-        session.onLoadingStop.connect(loading.stop)
+        Session.onLoggedIn.connect(gotoHomePage)
+        Session.onLoggedOut.connect(gotoLoginPage)
+        Session.onLoadingStart.connect(loading.start)
+        Session.onLoadingStop.connect(loading.stop)
 
         KeyReceiver.popStack.connect(stack.pop)
         stack.onDepthChanged.connect(tellKrAboutStackDepth)

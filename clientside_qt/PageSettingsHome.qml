@@ -9,5 +9,10 @@ PageSettingsHomeForm {
             ln2: "Mannage your user account."
             onClicked: stack.push(pageSettingsAccount)
         }
+        ComponentListItem {
+            ln1: "Sessions"
+            ln2: "Mannage your active sessions."
+            onClicked: stack.push(pageSettingsSessions)
+        }
     }
 }

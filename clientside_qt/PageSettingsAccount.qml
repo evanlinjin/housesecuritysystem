@@ -2,7 +2,7 @@ import QtQuick 2.7
 import QtQuick.Controls 2.0
 
 PageSettingsHomeForm {
-    toolbar.text: "Account Settings"
+    toolbar.text: "Account"
 
     listView.model: VisualItemModel {
         ComponentListItem {
@@ -19,6 +19,6 @@ PageSettingsHomeForm {
         confirmText: "Logout"
         cancelText: "Cancel"
         show2Buttons: true
-        confirmTrigger: session.logout
+        confirmTrigger: Session.logout
     }
 }

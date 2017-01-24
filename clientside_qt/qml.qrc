@@ -41,5 +41,6 @@
         <file>ConfirmPopupItem.qml</file>
         <file>ConfirmPopupItemForm.ui.qml</file>
         <file>ComponentPopup.qml</file>
+        <file>PageSettingsSessions.qml</file>
     </qresource>
 </RCC>

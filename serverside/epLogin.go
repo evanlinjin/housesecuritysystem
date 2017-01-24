@@ -9,6 +9,7 @@ import (
 type LoginRequest struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
+	Client   Client `json:"client"`
 }
 
 // LoginResponse represends a login response.
@@ -18,10 +19,9 @@ type LoginResponse struct {
 	UserID string `json:"user_id"`
 	Email  string `json:"email"`
 	// Session.
-	SessionID    string `json:"session_id"`
-	SessionKey   string `json:"session_key"`
-	LoginTime    int64  `json:"login_time"`
-	LastSeenTime int64  `json:"last_seen_time"`
+	SessionID  string `json:"session_id"`
+	SessionKey string `json:"session_key"`
+	LoginTime  int64  `json:"login_time"`
 }
 
 func loginHandleV1(w http.ResponseWriter, r *http.Request) {
@@ -67,15 +67,21 @@ func loginHandleV1(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Add session information.
+	e = dbc.AddSessionInformation(sid, request.Client)
+	if e != nil {
+		sendLoginError(http.StatusInternalServerError, "ERROR: %v", e)
+		return
+	}
+
 	// Send Response.
 	sendResponse(w, LoginResponse{
-		Status:       "SUCCESS",
-		UserID:       uid,
-		Email:        request.Email,
-		SessionID:    sid,
-		SessionKey:   sessionKey,
-		LoginTime:    loginTime,
-		LastSeenTime: loginTime,
+		Status:     "SUCCESS",
+		UserID:     uid,
+		Email:      request.Email,
+		SessionID:  sid,
+		SessionKey: sessionKey,
+		LoginTime:  loginTime,
 	}, http.StatusOK)
 	return
 }
