@@ -46,33 +46,13 @@ func testHandleV1(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Fprintf(buf, "\nSessions:\n")
 	for rows.Next() {
-		var sid, hash, uid string
+		var sid, hash, uid, client string
 		var loginTime, lastSeenTime int64
-		if e = rows.Scan(&sid, &hash, &uid, &loginTime, &lastSeenTime); e != nil {
+		if e = rows.Scan(&sid, &hash, &uid, &client, &loginTime, &lastSeenTime); e != nil {
 			http.Error(w, fmt.Sprintf("Could not scan result: %v", e), 500)
 			return
 		}
-		fmt.Fprintf(buf, "- %s, %s, %s, %v, %v\n", sid, hash, uid, loginTime, lastSeenTime)
-	}
-
-	rows.Close()
-
-	// SHOW ALL SESSION INFORMATION:
-
-	rows, e = dbc.Db.Query("SELECT * FROM SessionInformation")
-	if e != nil {
-		sendError(w, r, "Cannot query db: %v", e)
-		return
-	}
-
-	fmt.Fprintf(buf, "\nSession Information:\n")
-	for rows.Next() {
-		var sid, appName, appVersion, osName, osVersion string
-		if e = rows.Scan(&sid, &appName, &appVersion, &osName, &osVersion); e != nil {
-			http.Error(w, fmt.Sprintf("Could not scan result: %v", e), 500)
-			return
-		}
-		fmt.Fprintf(buf, "- %s, %s, %s, %s, %s\n", sid, appName, appVersion, osName, osVersion)
+		fmt.Fprintf(buf, "- %s, %s, %s, %s, %v, %v\n", sid, hash, uid, client, loginTime, lastSeenTime)
 	}
 
 	rows.Close()

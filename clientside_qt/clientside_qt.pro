@@ -2,6 +2,8 @@ QT += qml quick network core quickcontrols2 svg
 
 CONFIG += c++11
 
+#QMAKE_CXXFLAGS += -save-temps
+
 HEADERS += ../c-core/qt/pubnub_qt.h \
     messagereceiver.h \
     keys.h \
@@ -9,7 +11,8 @@ HEADERS += ../c-core/qt/pubnub_qt.h \
     sessionmanager.h \
     keyreceiver.h \
     models/sessionsmodel.h \
-    networkmanager.h
+    networkmanager.h \
+    settingsmanager.h
 
 SOURCES += main.cpp ../c-core/qt/pubnub_qt.cpp ../c-core/core/pubnub_ccore.c ../c-core/core/pubnub_assert_std.c ../c-core/core/pubnub_json_parse.c ../c-core/core/pubnub_helper.c \
     messagereceiver.cpp \
@@ -17,7 +20,8 @@ SOURCES += main.cpp ../c-core/qt/pubnub_qt.cpp ../c-core/core/pubnub_ccore.c ../
     sessionmanager.cpp \
     keyreceiver.cpp \
     models/sessionsmodel.cpp \
-    networkmanager.cpp
+    networkmanager.cpp \
+    settingsmanager.cpp
 
 RESOURCES += qml.qrc
 

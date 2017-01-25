@@ -1,14 +1,9 @@
 #include "networkmanager.h"
 
-NetworkManager::NetworkManager(/*QObject *parent*/)
+NetworkManager::NetworkManager()
 {
-//    QNetworkAccessManager(parent);
-}
 
-//NetworkManager::~NetworkManager()
-//{
-//    QNetworkAccessManager::~QNetworkAccessManager();
-//}
+}
 
 QNetworkReply* NetworkManager::post(const QNetworkRequest &request, const QByteArray &data)
 {
@@ -19,4 +14,20 @@ QNetworkReply* NetworkManager::post(const QNetworkRequest &request, const QByteA
     loop.exec();
 
     return reply;
+}
+
+QJsonObject NetworkManager::jsonPost(const QUrl &url, const QJsonObject &requestObj)
+{
+    QNetworkRequest request;
+    request.setUrl(url);
+    request.setRawHeader("Content-Type", "application/json");
+
+    // Send request.
+    QNetworkReply* reply = post(request, QJsonDocument(requestObj).toJson());
+
+    // Read network reply.
+    QJsonObject replyObj = QJsonDocument::fromJson(reply->readAll()).object();
+    reply->deleteLater();
+
+    return replyObj;
 }

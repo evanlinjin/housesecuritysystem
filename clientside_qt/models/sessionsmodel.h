@@ -15,19 +15,15 @@
 #include <QCoreApplication>
 #include <QDebug>
 
+#include "settingsmanager.h"
 #include "networkmanager.h"
 
 struct SessionItem {
-    // Session Info.
     QString sessionID;
     QString userID;
     int loginTime;
     int lastSeenTime;
-    // Client Info.
-    QString appName;
-    QString appVersion;
-    QString osName;
-    QString osVersion;
+    QString client;
 };
 
 class SessionsModel : public QAbstractListModel
@@ -39,22 +35,19 @@ public:
         UserIDRole,
         LoginTimeRole,
         LastSeenTimeRole,
-        AppNameRole,
-        AppVersionRole,
-        OSNameRole,
-        OSVersionRole
+        ClientRole,
     };
     QHash<int, QByteArray> roleNames() const;
 
     explicit SessionsModel(QObject *parent = 0);
     ~SessionsModel();
-    SessionsModel* linkUp(NetworkManager* n, QSettings* s);
+    SessionsModel* linkUp(NetworkManager* n, SettingsManager *s);
 
     int rowCount(const QModelIndex & parent = QModelIndex()) const;
     QVariant data(const QModelIndex & index, int role = Qt::DisplayRole) const;
 
 private:
-    QSettings* settings;
+    SettingsManager* settings;
     NetworkManager* nm;
 
     QList<SessionItem> m_sessions;

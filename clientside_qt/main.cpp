@@ -15,6 +15,8 @@
 
 int main(int argc, char *argv[])
 {
+    QCoreApplication::setOrganizationName("Gooseberry");
+    QCoreApplication::setApplicationName("Homeseed");
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
     QGuiApplication app(argc, argv);
 
@@ -29,6 +31,7 @@ int main(int argc, char *argv[])
 
     app.installEventFilter(keyReceiver);
     qInfo() << "CLIENT INFO:" << sessionManager->getClientInfo();
+    qInfo() << QString::asprintf("session/%s","test");
 
     // Expose generated objects.
     qc->setContextProperty("KeyReceiver", keyReceiver);

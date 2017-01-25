@@ -9,7 +9,7 @@ import (
 type LoginRequest struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
-	Client   Client `json:"client"`
+	Client   string `json:"client"`
 }
 
 // LoginResponse represends a login response.
@@ -21,6 +21,7 @@ type LoginResponse struct {
 	// Session.
 	SessionID  string `json:"session_id"`
 	SessionKey string `json:"session_key"`
+	Client     string `json:"client"`
 	LoginTime  int64  `json:"login_time"`
 }
 
@@ -61,15 +62,8 @@ func loginHandleV1(w http.ResponseWriter, r *http.Request) {
 
 	// Create a new session.
 	sid := genUID()
-	sessionKey, loginTime, e := dbc.CreateSession(uid, sid)
+	sessionKey, loginTime, e := dbc.CreateSession(uid, sid, request.Client)
 	if e != nil || uid == "" {
-		sendLoginError(http.StatusInternalServerError, "ERROR: %v", e)
-		return
-	}
-
-	// Add session information.
-	e = dbc.AddSessionInformation(sid, request.Client)
-	if e != nil {
 		sendLoginError(http.StatusInternalServerError, "ERROR: %v", e)
 		return
 	}
@@ -81,6 +75,7 @@ func loginHandleV1(w http.ResponseWriter, r *http.Request) {
 		Email:      request.Email,
 		SessionID:  sid,
 		SessionKey: sessionKey,
+		Client:     request.Client,
 		LoginTime:  loginTime,
 	}, http.StatusOK)
 	return

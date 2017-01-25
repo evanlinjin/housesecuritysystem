@@ -2,65 +2,48 @@
 #define SESSIONMANAGER_H
 
 #include <QObject>
-#include <QSettings>
-#include <QNetworkAccessManager>
-#include <QNetworkRequest>
-#include <QNetworkReply>
 #include <QJsonObject>
 #include <QJsonDocument>
 #include <QEventLoop>
 #include <QSysInfo>
 
 #include "networkmanager.h"
+#include "settingsmanager.h"
 #include "models/sessionsmodel.h"
+
+#define S_PROPERTY(TYPE,NAME) Q_PROPERTY(TYPE NAME READ NAME WRITE NAME NOTIFY sessionParamChanged)
+#define S_WRITE(TYPE,NAME) void NAME(const TYPE& a) {settings->setValue(QString("session/%1").arg(#NAME),a); emit sessionParamChanged();}
+#define S_READ(TYPE,NAME,FUNC) TYPE NAME() const {return settings->FUNC(QString("session/%1").arg(#NAME));}
+#define S_QML_EXPOSE(TYPE,FUNC,NAME) S_PROPERTY(TYPE,NAME) S_READ(TYPE,NAME,FUNC) S_WRITE(TYPE,NAME)
 
 class SessionManager : public QObject
 {
     Q_OBJECT
-    Q_PROPERTY(QString uid READ uid WRITE setUid NOTIFY uidChanged)
-    Q_PROPERTY(QString email READ email WRITE setEmail NOTIFY emailChanged)
-    Q_PROPERTY(QString sid READ sid WRITE setSid NOTIFY sidChanged)
-    Q_PROPERTY(QString skey READ skey WRITE setSkey NOTIFY skeyChanged)
-    Q_PROPERTY(int loginTime READ loginTime WRITE setLoginTime NOTIFY loginTimeChanged)
-    Q_PROPERTY(int lastSeenTime READ lastSeenTime WRITE setLastSeenTime NOTIFY lastSeenTimeChanged)
+    S_QML_EXPOSE(QString, getString, uid) // User ID
+    S_QML_EXPOSE(QString, getString, email) // Email
+    S_QML_EXPOSE(QString, getString, sid) // Session ID
+    S_QML_EXPOSE(QString, getString, skey) // Session Key
+    S_QML_EXPOSE(QString, getString, client) // Client Information
+    S_QML_EXPOSE(int, getInt, loginTime) // Login Time
+    S_QML_EXPOSE(int, getInt, lastSeenTime) // Last Seen Time
 
 public:
     explicit SessionManager(QString appStr, QObject *parent = 0);
     ~SessionManager();
 
-    QString uid() const {return settings->value("session/uid").toString();}
-    QString email() const {return settings->value("session/email").toString();}
-    QString sid() const {return settings->value("session/sid").toString();}
-    QString skey() const {return settings->value("session/skey").toString();}
-    int loginTime() const {return settings->value("session/loginTime").toInt();}
-    int lastSeenTime() const {return settings->value("session/lastSeenTime").toInt();}
-
-    void setUid(const QString& a) {settings->setValue("session/uid", a); emit uidChanged();}
-    void setEmail(const QString& a) {settings->setValue("session/email", a); emit emailChanged();}
-    void setSid(const QString& a) {settings->setValue("session/sid", a); emit sidChanged();}
-    void setSkey(const QString& a) {settings->setValue("session/skey", a); emit skeyChanged();}
-    void setLoginTime(const int& a) {settings->setValue("session/loginTime", a); emit loginTimeChanged();}
-    void setLastSeenTime(const int& a) {settings->setValue("session/lastSeenTime", a); emit lastSeenTimeChanged();}
-
 private:
-    QSettings* settings;
+    SettingsManager* settings;
     NetworkManager* nm;
     QString appName, appVersion, appStr;
 
 signals:
-    void uidChanged();
-    void emailChanged();
-    void sidChanged();
-    void skeyChanged();
-    void loginTimeChanged();
-    void lastSeenTimeChanged();
+    void sessionParamChanged();
 
     void loggedIn();
     void loggedOut();
 
     void loadingStart(QString msg);
     void loadingStop();
-//    void loadingCancelled();
 
 public slots:
     QString getClientInfo();

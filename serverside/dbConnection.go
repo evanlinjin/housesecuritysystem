@@ -207,13 +207,14 @@ func (c *DbConnection) CheckLogin(email, password string) (uid string, e error) 
 }
 
 // CreateSession creates a new session.
-func (c *DbConnection) CreateSession(uid, sid string) (key string, loginTime int64, e error) {
+func (c *DbConnection) CreateSession(uid, sid, client string) (key string, loginTime int64, e error) {
 	// Instantiate Sessions table.
 	_, e = c.Db.Exec(fmt.Sprintf(
-		"CREATE TABLE IF NOT EXISTS Sessions (%s,%s,%s,%s,%s,%s)",
+		"CREATE TABLE IF NOT EXISTS Sessions (%s,%s,%s,%s,%s,%s,%s)",
 		fmt.Sprintf("sid VARCHAR(%d) NOT NULL", 255),
 		fmt.Sprintf("hash CHAR(%d) NOT NULL", LENGTHPASSWORDHASH),
 		fmt.Sprintf("uid VARCHAR(%d) NOT NULL", 255),
+		fmt.Sprintf("client VARCHAR(%d) NOT NULL", 255),
 		"loginTime BIGINT(1) NOT NULL",
 		"lastSeenTime BIGINT(1) NOT NULL",
 		"PRIMARY KEY(sid)",
@@ -229,41 +230,14 @@ func (c *DbConnection) CreateSession(uid, sid string) (key string, loginTime int
 
 	// Create new session.
 	_, e = c.Db.Exec(
-		"INSERT INTO Sessions(sid,hash,uid,loginTime,lastSeenTime) VALUES(?,?,?,?,?)",
-		sid, hash, uid, loginTime, loginTime,
+		"INSERT INTO Sessions(sid,hash,uid,client,loginTime,lastSeenTime) VALUES(?,?,?,?,?,?)",
+		sid, hash, uid, client, loginTime, loginTime,
 	)
 	if e != nil {
 		return
 	}
 
 	key = tempKey
-	return
-}
-
-// AddSessionInformation adds session information for a session.
-func (c *DbConnection) AddSessionInformation(sid string, ct Client) (e error) {
-	// Instantiate SessionInformation table.
-	_, e = c.Db.Exec(fmt.Sprintf(
-		"CREATE TABLE IF NOT EXISTS SessionInformation (%s,%s,%s,%s,%s,%s)",
-		fmt.Sprintf("sid VARCHAR(%d) NOT NULL", 255),
-		fmt.Sprintf("appName VARCHAR(%d) NOT NULL", 255),
-		fmt.Sprintf("appVersion VARCHAR(%d) NOT NULL", 255),
-		fmt.Sprintf("osName VARCHAR(%d) NOT NULL", 255),
-		fmt.Sprintf("osVersion VARCHAR(%d) NOT NULL", 255),
-		"PRIMARY KEY(sid)",
-	))
-	if e != nil {
-		return
-	}
-
-	// Add a new entry to SessionInformation.
-	_, e = c.Db.Exec(
-		"INSERT INTO SessionInformation(sid,appName,appVersion,osName,osVersion) VALUES(?,?,?,?,?)",
-		sid, ct.AppName, ct.AppVersion, ct.OSName, ct.OSVersion,
-	)
-	if e != nil {
-		return
-	}
 	return
 }
 
@@ -300,10 +274,6 @@ func (c *DbConnection) DeleteSession(uid, sid string) (t int64, e error) {
 	if e != nil {
 		return
 	}
-	_, e = c.Db.Exec("DELETE FROM SessionInformation WHERE sid = ?", sid)
-	if e != nil {
-		return
-	}
 	t = time.Now().Unix()
 	return
 }
@@ -320,24 +290,13 @@ func (c *DbConnection) GetUserSessions(uid, sid string) (a []Session, e error) {
 	// Scan rows.
 	for rows.Next() {
 		s := Session{}
-		e = rows.Scan(&s.SessionID, &s.SessionKeyHash, &s.UserID, &s.LoginTime, &s.LastSeenTime)
+		e = rows.Scan(&s.SessionID, &s.SessionKeyHash, &s.UserID, &s.Client, &s.LoginTime, &s.LastSeenTime)
 		if e != nil {
 			return
 		}
 		a = append(a, s)
 	}
 	rows.Close()
-
-	// Add Client Info.
-	for i := 0; i < len(a); i++ {
-		cl := Client{}
-		c.Db.Exec(fmt.Sprintf("USE %s", DBNAME))
-		row := c.Db.QueryRow("SELECT appName,appVersion,osName,osVersion FROM SessionInformation WHERE sid = ?", a[i].SessionID)
-		if row.Scan(&cl.AppName, &cl.AppVersion, &cl.OSName, &cl.OSVersion) != nil {
-			continue
-		}
-		a[i].Client = cl
-	}
 
 	return
 }
@@ -347,15 +306,7 @@ type Session struct {
 	SessionID      string `json:"session_id"`
 	SessionKeyHash string `json:"session_key_hash"`
 	UserID         string `json:"user_id"`
+	Client         string `json:"client"`
 	LoginTime      int64  `json:"login_time"`
 	LastSeenTime   int64  `json:"last_seen_time"`
-	Client         Client `json:"client"`
-}
-
-// Client represents a client.
-type Client struct {
-	AppName    string `json:"app_name"`
-	AppVersion string `json:"app_version"`
-	OSName     string `json:"os_name"`
-	OSVersion  string `json:"os_version"`
 }

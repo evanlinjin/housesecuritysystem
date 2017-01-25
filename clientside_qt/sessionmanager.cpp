@@ -3,7 +3,7 @@
 SessionManager::SessionManager(QString appStr, QObject *parent) : QObject(parent), appStr(appStr)
 {
     nm = new NetworkManager();
-    settings = new QSettings("Gooseberry", "House Security System", this);
+    settings = new SettingsManager("Gooseberry", "House Security System", this);
 }
 
 SessionManager::~SessionManager()
@@ -24,45 +24,26 @@ QString SessionManager::getClientInfo()
 bool SessionManager::login(QString email, QString password)
 {
     emit loadingStart("Logging in...");
-    // Prepare network request.
-    QNetworkRequest request;
-    request.setUrl(QUrl("https://telepool-144405.appspot.com/api/v1/login"));
-    request.setRawHeader("Content-Type", "application/json");
-
-    QJsonObject dataSessionObj;
-    dataSessionObj["app_name"] = QJsonValue(appName);
-    dataSessionObj["app_version"] = QJsonValue(appVersion);
-    dataSessionObj["os_name"] = QJsonValue(QString("%1 %2").arg(QSysInfo::productType(), QSysInfo::kernelType()));
-    dataSessionObj["os_version"] =  QJsonValue(QSysInfo::productVersion());
 
     QJsonObject dataObj;
     dataObj["email"] = QJsonValue(email);
     dataObj["password"] = QJsonValue(password);
-    dataObj["client"] = dataSessionObj;
+    dataObj["client"] = QJsonValue(getClientInfo());
 
-    // Send request.
-    QNetworkReply* reply = nm->post(request, QJsonDocument(dataObj).toJson());
-
-    // Wait for Network Reply.
-//    QEventLoop loop;
-//    connect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
-//    loop.exec();
-
-    // Read network reply.
-    QJsonObject replyObj = QJsonDocument::fromJson(reply->readAll()).object();
-    reply->deleteLater();
+    QJsonObject replyObj = nm->jsonPost(QUrl("https://telepool-144405.appspot.com/api/v1/login"), dataObj);
 
     // Get reply status.
     QString status = replyObj["status"].toString().trimmed();
 
     if (status == "SUCCESS" || status == "OKAY")
     {
-        setUid(replyObj["user_id"].toString());
-        setEmail(replyObj["email"].toString());
-        setSid(replyObj["session_id"].toString());
-        setSkey(replyObj["session_key"].toString());
-        setLoginTime(replyObj["login_time"].toInt());
-        setLastSeenTime(replyObj["last_seen_time"].toInt());
+        this->uid(replyObj["user_id"].toString());
+        this->email(replyObj["email"].toString());
+        this->sid(replyObj["session_id"].toString());
+        this->skey(replyObj["session_key"].toString());
+        this->client(replyObj["client"].toString());
+        this->loginTime(replyObj["login_time"].toInt());
+        this->lastSeenTime(replyObj["last_seen_time"].toInt());
 
         emit loggedIn();
         emit loadingStop();
@@ -82,28 +63,12 @@ bool SessionManager::logout()
         return true;
     }
 
-    // Prepare network request.
-    QNetworkRequest request;
-    request.setUrl(QUrl("https://telepool-144405.appspot.com/api/v1/logout"));
-    request.setRawHeader("Content-Type", "application/json");
-
     QJsonObject dataObj;
     dataObj["user_id"] = QJsonValue(uid());
     dataObj["session_id"] = QJsonValue(sid());
     dataObj["session_key"] = QJsonValue(skey());
 
-    // Send request.
-    QNetworkReply* reply = nm->post(request, QJsonDocument(dataObj).toJson());
-
-    // Wait for Network Reply.
-//    QEventLoop loop;
-//    connect(reply, SIGNAL(error(QNetworkReply::NetworkError)), &loop, SLOT(quit()));
-//    connect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
-//    loop.exec();
-
-    // Read network reply.
-    QJsonObject replyObj = QJsonDocument::fromJson(reply->readAll()).object();
-    reply->deleteLater();
+    QJsonObject replyObj = nm->jsonPost(QUrl("https://telepool-144405.appspot.com/api/v1/logout"), dataObj);
 
     // Get reply status.
     QString status = replyObj["status"].toString().trimmed();
@@ -111,12 +76,13 @@ bool SessionManager::logout()
 
     if (status != "")
     {
-        setUid("");
-        setEmail("");
-        setSid("");
-        setSkey("");
-        setLoginTime(0);
-        setLastSeenTime(0);
+        this->uid("");
+        this->email("");
+        this->sid("");
+        this->skey("");
+        this->client("");
+        this->loginTime(0);
+        this->lastSeenTime(0);
 
         emit loggedOut();
         emit loadingStop();

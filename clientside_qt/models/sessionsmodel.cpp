@@ -10,7 +10,7 @@ SessionsModel::~SessionsModel()
     qDebug() << "SessionsModel DELETED!";
 }
 
-SessionsModel *SessionsModel::linkUp(NetworkManager *n, QSettings *s)
+SessionsModel *SessionsModel::linkUp(NetworkManager *n, SettingsManager *s)
 {
     nm = n;
     settings = s;
@@ -40,14 +40,8 @@ QVariant SessionsModel::data(const QModelIndex & index, int role) const
         return QVariant(item.loginTime);
     case LastSeenTimeRole:
         return QVariant(item.lastSeenTime);
-    case AppNameRole:
-        return QVariant(item.appName);
-    case AppVersionRole:
-        return QVariant(item.appVersion);
-    case OSNameRole:
-        return QVariant(item.osName);
-    case OSVersionRole:
-        return QVariant(item.osVersion);
+    case ClientRole:
+        return QVariant(item.client);
     }
 
     return QVariant();
@@ -60,10 +54,7 @@ QHash<int, QByteArray> SessionsModel::roleNames() const
     roles[UserIDRole] = "userID";
     roles[LoginTimeRole] = "loginTime";
     roles[LastSeenTimeRole] = "lastSeenTime";
-    roles[AppNameRole] = "appName";
-    roles[AppVersionRole] = "appVersion";
-    roles[OSNameRole] = "osName";
-    roles[OSVersionRole] = "osVersion";
+    roles[ClientRole] = "client";
     return roles;
 }
 
@@ -92,11 +83,6 @@ void SessionsModel::refresh()
     // Send Request.
     QNetworkReply* reply = nm->post(request, QJsonDocument(dataObj).toJson());
 
-    // Wait for network reply.
-//    QEventLoop loop;
-//    connect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
-//    loop.exec();
-
     // Read network reply.
     QJsonObject replyObj = QJsonDocument::fromJson(reply->readAll()).object();
     reply->deleteLater();
@@ -107,24 +93,19 @@ void SessionsModel::refresh()
 
     if (status == "SUCCESS" || status == "OKAY")
     {
-//        const int count = replyObj["count"].toInt();
         QJsonArray array = replyObj["sessions"].toArray();
 
         // Iterate through sessions.
         for (int i = 0; i < array.count(); i++) {
 
             QJsonObject sObj = array.at(i).toObject();
-            QJsonObject cObj = sObj["client"].toObject();
 
             SessionItem item;
             item.sessionID = sObj["session_id"].toString();
             item.userID = sObj["user_id"].toString();
             item.loginTime = sObj["login_time"].toInt();
             item.lastSeenTime = sObj["last_seen_time"].toInt();
-            item.appName = cObj["app_name"].toString();
-            item.appVersion = cObj["app_version"].toString();
-            item.osName = cObj["os_name"].toString();
-            item.osVersion = cObj["os_version"].toString();
+            item.client = sObj["client"].toString();
 
             append(item);
         }

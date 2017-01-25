@@ -5,8 +5,8 @@ PageSettingsHomeForm {
     toolbar.text: "Sessions"
     listView {
         delegate: ComponentListItem {
-            ln1: model.appName + " " + model.appVersion
-            ln2: model.osName + " " + model.osVersion
+            ln1: model.client
+            ln2: model.lastSeenTime
             onPressAndHold: console.log("Pressed and Held.")
         }
         model: Session.genSessionsModel(this)
