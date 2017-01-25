@@ -11,8 +11,25 @@ LoadingForm {
     }
 
     function stop() {
+        cancelButton.visible = false
+        cancelButton.enabled = false
         isLoading = false
         label.text = qsTr("Loading ...")
+    }
+
+    function showCancelButton() {
+        cancelButton.visible = true
+        cancelButton.enabled = true
+    }
+
+    Connections {
+        target: cancelButton
+        onClicked: Session.abortAll()
+    }
+
+    cancelButton {
+        visible: false
+        enabled: false
     }
 
     pane.onOpacityChanged: loading.visible = (pane.opacity !== 0.0)

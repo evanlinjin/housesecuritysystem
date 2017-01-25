@@ -15,6 +15,8 @@
 #include <QCoreApplication>
 #include <QDebug>
 
+#include "networkmanager.h"
+
 struct SessionItem {
     // Session Info.
     QString sessionID;
@@ -46,15 +48,15 @@ public:
 
     explicit SessionsModel(QObject *parent = 0);
     ~SessionsModel();
-
-    void linkUp(QNetworkAccessManager* nm, QSettings* settings);
+    SessionsModel* linkUp(NetworkManager* n, QSettings* s);
 
     int rowCount(const QModelIndex & parent = QModelIndex()) const;
     QVariant data(const QModelIndex & index, int role = Qt::DisplayRole) const;
 
 private:
     QSettings* settings;
-    QNetworkAccessManager* nm;
+    NetworkManager* nm;
+
     QList<SessionItem> m_sessions;
 
     void append(const SessionItem &item);

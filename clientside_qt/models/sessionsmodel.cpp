@@ -3,22 +3,18 @@
 SessionsModel::SessionsModel(QObject* parent) : QAbstractListModel(parent)
 {
     qDebug() << "SessionsModel CREATED!";
-//    nm = new QNetworkAccessManager(this);
-//    settings = new QSettings("Gooseberry", "House Security System", this);
-//    refresh();
 }
 
 SessionsModel::~SessionsModel()
 {
     qDebug() << "SessionsModel DELETED!";
-//    nm->deleteLater();
-//    settings->deleteLater();
 }
 
-void SessionsModel::linkUp(QNetworkAccessManager* nm, QSettings* settings)
+SessionsModel *SessionsModel::linkUp(NetworkManager *n, QSettings *s)
 {
-    this->nm = nm;
-    this->settings = settings;
+    nm = n;
+    settings = s;
+    return this;
 }
 
 int SessionsModel::rowCount(const QModelIndex & parent) const
@@ -97,9 +93,9 @@ void SessionsModel::refresh()
     QNetworkReply* reply = nm->post(request, QJsonDocument(dataObj).toJson());
 
     // Wait for network reply.
-    QEventLoop loop;
-    connect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
-    loop.exec();
+//    QEventLoop loop;
+//    connect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
+//    loop.exec();
 
     // Read network reply.
     QJsonObject replyObj = QJsonDocument::fromJson(reply->readAll()).object();

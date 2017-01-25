@@ -8,14 +8,16 @@ HEADERS += ../c-core/qt/pubnub_qt.h \
     newusermanager.h \
     sessionmanager.h \
     keyreceiver.h \
-    models/sessionsmodel.h
+    models/sessionsmodel.h \
+    networkmanager.h
 
 SOURCES += main.cpp ../c-core/qt/pubnub_qt.cpp ../c-core/core/pubnub_ccore.c ../c-core/core/pubnub_assert_std.c ../c-core/core/pubnub_json_parse.c ../c-core/core/pubnub_helper.c \
     messagereceiver.cpp \
     newusermanager.cpp \
     sessionmanager.cpp \
     keyreceiver.cpp \
-    models/sessionsmodel.cpp
+    models/sessionsmodel.cpp \
+    networkmanager.cpp
 
 RESOURCES += qml.qrc
 

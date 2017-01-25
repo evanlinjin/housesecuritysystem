@@ -11,6 +11,7 @@
 #include <QEventLoop>
 #include <QSysInfo>
 
+#include "networkmanager.h"
 #include "models/sessionsmodel.h"
 
 class SessionManager : public QObject
@@ -24,7 +25,7 @@ class SessionManager : public QObject
     Q_PROPERTY(int lastSeenTime READ lastSeenTime WRITE setLastSeenTime NOTIFY lastSeenTimeChanged)
 
 public:
-    explicit SessionManager(QObject *parent = 0);
+    explicit SessionManager(QString appStr, QObject *parent = 0);
     ~SessionManager();
 
     QString uid() const {return settings->value("session/uid").toString();}
@@ -43,8 +44,8 @@ public:
 
 private:
     QSettings* settings;
-    QNetworkAccessManager* nm;
-    QString appName, appVersion;
+    NetworkManager* nm;
+    QString appName, appVersion, appStr;
 
 signals:
     void uidChanged();
@@ -59,14 +60,18 @@ signals:
 
     void loadingStart(QString msg);
     void loadingStop();
+//    void loadingCancelled();
 
 public slots:
+    QString getClientInfo();
+
     bool login(QString email, QString password);
     bool logout();
     bool isLoggedIn();
 
-    SessionsModel* genSessionsModel(QObject *parent = 0);
+    void abortAll();
 
+    SessionsModel* genSessionsModel(QObject *parent = 0);
 };
 
 #endif // SESSIONMANAGER_H

@@ -6,6 +6,7 @@ Item {
     id: item1
     width: 400
     height: 400
+    property alias cancelButton: cancelButton
     property alias pane: pane
     property alias busyIndicator: busyIndicator
     property alias label: label
@@ -21,6 +22,7 @@ Item {
         y: 81
         width: 60
         height: 60
+        anchors.verticalCenterOffset: -20
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.verticalCenter: parent.verticalCenter
         Layout.alignment: Qt.AlignHCenter | Qt.AlignBaseline
@@ -42,5 +44,16 @@ Item {
         anchors.topMargin: 20
         anchors.top: item2.bottom
         Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
+    }
+
+    Button {
+        id: cancelButton
+        text: qsTr("Cancel")
+        anchors.right: parent.right
+        anchors.rightMargin: 20
+        anchors.left: parent.left
+        anchors.leftMargin: 20
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: 20
     }
 }

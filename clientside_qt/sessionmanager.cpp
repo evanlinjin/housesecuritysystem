@@ -1,18 +1,24 @@
 #include "sessionmanager.h"
 
-SessionManager::SessionManager(QObject *parent) : QObject(parent)
+SessionManager::SessionManager(QString appStr, QObject *parent) : QObject(parent), appStr(appStr)
 {
-    nm = new QNetworkAccessManager(this);
+    nm = new NetworkManager();
     settings = new QSettings("Gooseberry", "House Security System", this);
-
-    appName = "Gooseberry Homeseed Qt Client";
-    appVersion = "0.1";
 }
 
 SessionManager::~SessionManager()
 {
     settings->deleteLater();
     nm->deleteLater();
+}
+
+QString SessionManager::getClientInfo()
+{
+    QString osName(QSysInfo::productType());
+    QString osVersion(QSysInfo::productVersion());
+    osName[0] = osName[0].toUpper();
+
+    return QString("%1 on %2 %3").arg(appStr, osName, osVersion);
 }
 
 bool SessionManager::login(QString email, QString password)
@@ -38,9 +44,9 @@ bool SessionManager::login(QString email, QString password)
     QNetworkReply* reply = nm->post(request, QJsonDocument(dataObj).toJson());
 
     // Wait for Network Reply.
-    QEventLoop loop;
-    connect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
-    loop.exec();
+//    QEventLoop loop;
+//    connect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
+//    loop.exec();
 
     // Read network reply.
     QJsonObject replyObj = QJsonDocument::fromJson(reply->readAll()).object();
@@ -90,9 +96,10 @@ bool SessionManager::logout()
     QNetworkReply* reply = nm->post(request, QJsonDocument(dataObj).toJson());
 
     // Wait for Network Reply.
-    QEventLoop loop;
-    connect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
-    loop.exec();
+//    QEventLoop loop;
+//    connect(reply, SIGNAL(error(QNetworkReply::NetworkError)), &loop, SLOT(quit()));
+//    connect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
+//    loop.exec();
 
     // Read network reply.
     QJsonObject replyObj = QJsonDocument::fromJson(reply->readAll()).object();
@@ -125,9 +132,14 @@ bool SessionManager::isLoggedIn()
     return (uid() != "" && sid() != "");
 }
 
+void SessionManager::abortAll()
+{
+    emit nm->abort();
+    emit loadingStop();
+}
+
 SessionsModel* SessionManager::genSessionsModel(QObject *parent)
 {
     SessionsModel* temp = new SessionsModel(parent);
-    temp->linkUp(nm, settings);
-    return temp;
+    return temp->linkUp(nm, settings);
 }

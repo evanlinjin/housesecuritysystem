@@ -3,6 +3,7 @@
 #include <QtQml>
 #include <QtQml/QQmlContext>
 #include <QtQuickControls2/QQuickStyle>
+#include <QtDebug>
 
 #include "keyreceiver.h"
 #include "sessionmanager.h"
@@ -10,7 +11,7 @@
 #include "newusermanager.h"
 #include "sessionmanager.h"
 
-#include "models/sessionsmodel.h"
+//#include "models/sessionsmodel.h"
 
 int main(int argc, char *argv[])
 {
@@ -23,9 +24,11 @@ int main(int argc, char *argv[])
     QQmlContext* qc = engine.rootContext();
 
     // Generated objects.
-    SessionManager* sessionManager = new SessionManager();
+    SessionManager* sessionManager = new SessionManager("Qt App");
     KeyReceiver* keyReceiver = new KeyReceiver();
+
     app.installEventFilter(keyReceiver);
+    qInfo() << "CLIENT INFO:" << sessionManager->getClientInfo();
 
     // Expose generated objects.
     qc->setContextProperty("KeyReceiver", keyReceiver);
