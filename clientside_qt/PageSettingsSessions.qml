@@ -25,6 +25,24 @@ PageSettingsHomeForm {
 
                 onClicked: openDeleteSessionPopup(ln1, ln2, sessionID)
             }
+
+            Button {
+                id: deleteAllButton
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.bottom: parent.bottom
+                anchors.leftMargin: 23
+                anchors.rightMargin: 23
+                visible: sessionID === Session.sid
+                text: "Terminate all other sessions"
+                onClicked: openDeleteAllOtherSessionsPopup()
+            }
+
+            Component.onCompleted: {
+                if (sessionID === Session.sid) {
+                    text += "<br><br>"
+                }
+            }
         }
         model: Session.genSessionsModel(this)
         section {
@@ -44,18 +62,32 @@ PageSettingsHomeForm {
 
     ComponentPopup {
         id: deleteSessionPopup
-        titleText: "Delete Session Confirmation"
-        bodyText: "Are you sure you want to delete this session?"
-        confirmText: "Delete"
         cancelText: "Cancel"
         show2Buttons: true
     }
 
     function openDeleteSessionPopup(sname, sdesc, sid) {
+        deleteSessionPopup.titleText =
+                "Delete Session Confirmation"
         deleteSessionPopup.bodyText =
                 ("Are you sure you want to delete this session?<br><br><h4>%1</h4>%2").arg(sname).arg(sdesc)
+        deleteSessionPopup.confirmText =
+                "Delete"
         deleteSessionPopup.confirmTrigger = function() {
             listView.model.deleteSession(sid)
+        }
+        deleteSessionPopup.open()
+    }
+
+    function openDeleteAllOtherSessionsPopup() {
+        deleteSessionPopup.titleText =
+                "Delete All Other Sessions Confirmation"
+        deleteSessionPopup.bodyText =
+                "Are you sure you want to delete all other sessions?"
+        deleteSessionPopup.confirmText =
+                "Delete All"
+        deleteSessionPopup.confirmTrigger = function() {
+            listView.model.deleteAllOtherSessions()
         }
         deleteSessionPopup.open()
     }

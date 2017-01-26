@@ -55,7 +55,6 @@ private:
     QList<SessionItem> m_sessions;
 
     void append(const SessionItem &item);
-//    void replaceAll(const QList<SessionItem> &list);
     void displaySessions(QJsonArray &array);
 
 signals:
@@ -64,6 +63,7 @@ signals:
 
 public slots:
     void deleteSession(QString sid);
+    void deleteAllOtherSessions();
 
     void refresh();
     void clear();

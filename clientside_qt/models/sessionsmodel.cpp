@@ -134,6 +134,41 @@ void SessionsModel::deleteSession(QString sid)
     return;
 }
 
+void SessionsModel::deleteAllOtherSessions()
+{
+    emit loadingStart("Deleting Sessions...");
+
+    QJsonArray dataArray;
+    for (int i = 0; i < m_sessions.count(); i++) {
+        QString sid = m_sessions[i].sessionID;
+        if (sid != settings->value("session/sid").toString()) {
+            dataArray.append(QJsonValue(sid));
+        }
+    }
+
+    QJsonObject dataObj;
+    dataObj["user_id"] = QJsonValue(settings->value("session/uid").toString());
+    dataObj["session_id"] = QJsonValue(settings->value("session/sid").toString());
+    dataObj["session_key"] = QJsonValue(settings->value("session/skey").toString());
+    dataObj["sessions_to_delete"] = QJsonValue(dataArray);
+
+    QJsonObject replyObj = nm->jsonPost(QUrl("https://telepool-144405.appspot.com/api/v1/delete_user_sessions"), dataObj);
+
+    // Get reply status.
+    emit loadingStart("Processing Data...");
+    QString status = replyObj["status"].toString().trimmed();
+
+    if (status == "SUCCESS" || status == "OKAY")
+    {
+        QJsonArray array = replyObj["active_sessions"].toArray();
+        displaySessions(array);
+    }
+
+    emit loadingStop();
+    return;
+}
+
+
 void SessionsModel::refresh()
 {
     emit loadingStart("Retrieving Data...");
