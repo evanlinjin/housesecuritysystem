@@ -268,7 +268,7 @@ func (c *DbConnection) CheckSession(sid, key string) (active bool, times [2]int6
 	return
 }
 
-// DeleteSession deletes a session aling with it's session information.
+// DeleteSession deletes a session along with it's session information.
 func (c *DbConnection) DeleteSession(uid, sid string) (t int64, e error) {
 	_, e = c.Db.Exec("DELETE FROM Sessions WHERE uid = ? AND sid = ?", uid, sid)
 	if e != nil {

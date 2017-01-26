@@ -12,9 +12,11 @@ ApplicationWindow {
     minimumHeight: 320
     title: qsTr("House Security System")
 
-    Universal.theme: Universal.Dark
-
     property int splitNum: width/120
+
+    Universal.theme: Universal.Dark
+    Universal.accent: Universal.Cyan
+
 
     StackView {
         id: stack
@@ -40,11 +42,6 @@ ApplicationWindow {
     Component {
         id: pageSettingsHome
         PageSettingsHome{ Component.onCompleted: loading.stop() }
-    }
-
-    Component {
-        id: pageSettingsAccount
-        PageSettingsAccount{ Component.onCompleted: loading.stop() }
     }
 
     Component {

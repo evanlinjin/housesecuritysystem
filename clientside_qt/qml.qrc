@@ -13,7 +13,6 @@
         <file>TempToolbar.qml</file>
         <file>TempToolbarForm.ui.qml</file>
         <file>ComponentListItem.qml</file>
-        <file>PageSettingsAccount.qml</file>
         <file>Loading.qml</file>
         <file>LoadingForm.ui.qml</file>
         <file>icons/account.svg</file>
@@ -42,5 +41,7 @@
         <file>ConfirmPopupItemForm.ui.qml</file>
         <file>ComponentPopup.qml</file>
         <file>PageSettingsSessions.qml</file>
+        <file>ComponentListSectionTitle.qml</file>
+        <file>ComponentsListSessionsItem.qml</file>
     </qresource>
 </RCC>

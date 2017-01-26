@@ -42,6 +42,8 @@ QVariant SessionsModel::data(const QModelIndex & index, int role) const
         return QVariant(item.lastSeenTime);
     case ClientRole:
         return QVariant(item.client);
+    case SessionTypeRole:
+        return QVariant(item.sessionType);
     }
 
     return QVariant();
@@ -55,6 +57,7 @@ QHash<int, QByteArray> SessionsModel::roleNames() const
     roles[LoginTimeRole] = "loginTime";
     roles[LastSeenTimeRole] = "lastSeenTime";
     roles[ClientRole] = "client";
+    roles[SessionTypeRole] = "sessionType";
     return roles;
 }
 
@@ -65,15 +68,75 @@ void SessionsModel::append(const SessionItem &item)
     endInsertRows();
 }
 
-void SessionsModel::refresh()
+void SessionsModel::displaySessions(QJsonArray &array)
 {
     clear();
-    emit loadingStart("Retrieving Data...");
+    QList<SessionItem> m_sessions;
 
-    // Prepare network request.
-    QNetworkRequest request;
-    request.setUrl(QUrl("https://telepool-144405.appspot.com/api/v1/list_user_sessions"));
-    request.setRawHeader("Content-Type", "application/json");
+    // Iterate through sessions.
+    for (int i = 0; i < array.count(); i++) {
+        QJsonObject sObj = array.at(i).toObject();
+
+        SessionItem item;
+        item.sessionID = sObj["session_id"].toString();
+        item.userID = sObj["user_id"].toString();
+        item.loginTime = sObj["login_time"].toInt();
+        item.lastSeenTime = sObj["last_seen_time"].toInt();
+        item.client = sObj["client"].toString();
+
+        if (item.sessionID == settings->getString("session/sid")) {
+            item.sessionType = "Current Session";
+
+            if (i > 0) {
+                SessionItem temp = m_sessions[0];
+                m_sessions[0] = item;
+                m_sessions << temp;
+            } else {
+                m_sessions << item;
+            }
+
+        } else {
+            item.sessionType = "Active Sessions";
+            m_sessions << item;
+        }
+    }
+    beginInsertRows(QModelIndex(), 0, array.count()-1);
+    this->m_sessions = m_sessions;
+    endInsertRows();
+}
+
+void SessionsModel::deleteSession(QString sid)
+{
+    emit loadingStart("Deleting Session...");
+
+    QJsonArray dataArray;
+    dataArray.append(QJsonValue(sid));
+
+    QJsonObject dataObj;
+    dataObj["user_id"] = QJsonValue(settings->value("session/uid").toString());
+    dataObj["session_id"] = QJsonValue(settings->value("session/sid").toString());
+    dataObj["session_key"] = QJsonValue(settings->value("session/skey").toString());
+    dataObj["sessions_to_delete"] = QJsonValue(dataArray);
+
+    QJsonObject replyObj = nm->jsonPost(QUrl("https://telepool-144405.appspot.com/api/v1/delete_user_sessions"), dataObj);
+
+    // Get reply status.
+    emit loadingStart("Processing Data...");
+    QString status = replyObj["status"].toString().trimmed();
+
+    if (status == "SUCCESS" || status == "OKAY")
+    {
+        QJsonArray array = replyObj["active_sessions"].toArray();
+        displaySessions(array);
+    }
+
+    emit loadingStop();
+    return;
+}
+
+void SessionsModel::refresh()
+{
+    emit loadingStart("Retrieving Data...");
 
     QJsonObject dataObj;
     dataObj["user_id"] = QJsonValue(settings->value("session/uid").toString());
@@ -81,11 +144,7 @@ void SessionsModel::refresh()
     dataObj["session_key"] = QJsonValue(settings->value("session/skey").toString());
 
     // Send Request.
-    QNetworkReply* reply = nm->post(request, QJsonDocument(dataObj).toJson());
-
-    // Read network reply.
-    QJsonObject replyObj = QJsonDocument::fromJson(reply->readAll()).object();
-    reply->deleteLater();
+    QJsonObject replyObj = nm->jsonPost(QUrl("https://telepool-144405.appspot.com/api/v1/list_user_sessions"), dataObj);
 
     // Get reply status.
     emit loadingStart("Processing Data...");
@@ -94,21 +153,7 @@ void SessionsModel::refresh()
     if (status == "SUCCESS" || status == "OKAY")
     {
         QJsonArray array = replyObj["sessions"].toArray();
-
-        // Iterate through sessions.
-        for (int i = 0; i < array.count(); i++) {
-
-            QJsonObject sObj = array.at(i).toObject();
-
-            SessionItem item;
-            item.sessionID = sObj["session_id"].toString();
-            item.userID = sObj["user_id"].toString();
-            item.loginTime = sObj["login_time"].toInt();
-            item.lastSeenTime = sObj["last_seen_time"].toInt();
-            item.client = sObj["client"].toString();
-
-            append(item);
-        }
+        displaySessions(array);
     }
 
     emit loadingStop();

@@ -4,15 +4,28 @@ PageSettingsHomeForm {
     toolbar.text: "Settings"
 
     listView.model: VisualItemModel {
-        ComponentListItem {
-            ln1: "Account"
-            ln2: "Mannage your user account."
-            onClicked: stack.push(pageSettingsAccount)
+        ComponentListSectionTitle {
+            ln: "Account and Security"
         }
         ComponentListItem {
-            ln1: "Sessions"
-            ln2: "Mannage your active sessions."
+            ln1: "Active Sessions"
+            ln2: "View and manage your active sessions"
             onClicked: stack.push(pageSettingsSessions)
         }
+        ComponentListItem {
+            ln1: "Log Out"
+            onClicked: logoutPopup.open()
+        }
+
+    }
+
+    ComponentPopup {
+        id: logoutPopup
+        titleText: "Logout Confirmation"
+        bodyText: "Are you sure you want to logout?"
+        confirmText: "Logout"
+        cancelText: "Cancel"
+        show2Buttons: true
+        confirmTrigger: Session.logout
     }
 }

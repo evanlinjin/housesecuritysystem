@@ -23,6 +23,7 @@ func init() {
 	http.HandleFunc(apiv1("logout"), logoutHandleV1)
 
 	http.HandleFunc(apiv1("list_user_sessions"), getUserSessionsHandleV1)
+	http.HandleFunc(apiv1("delete_user_sessions"), deleteUserSessionsHandleV1)
 }
 
 /******************************************************************************/

@@ -11,8 +11,6 @@
 #include "newusermanager.h"
 #include "sessionmanager.h"
 
-//#include "models/sessionsmodel.h"
-
 int main(int argc, char *argv[])
 {
     QCoreApplication::setOrganizationName("Gooseberry");
@@ -31,7 +29,6 @@ int main(int argc, char *argv[])
 
     app.installEventFilter(keyReceiver);
     qInfo() << "CLIENT INFO:" << sessionManager->getClientInfo();
-    qInfo() << QString::asprintf("session/%s","test");
 
     // Expose generated objects.
     qc->setContextProperty("KeyReceiver", keyReceiver);

@@ -24,6 +24,7 @@ struct SessionItem {
     int loginTime;
     int lastSeenTime;
     QString client;
+    QString sessionType;
 };
 
 class SessionsModel : public QAbstractListModel
@@ -36,6 +37,7 @@ public:
         LoginTimeRole,
         LastSeenTimeRole,
         ClientRole,
+        SessionTypeRole
     };
     QHash<int, QByteArray> roleNames() const;
 
@@ -53,12 +55,16 @@ private:
     QList<SessionItem> m_sessions;
 
     void append(const SessionItem &item);
+//    void replaceAll(const QList<SessionItem> &list);
+    void displaySessions(QJsonArray &array);
 
 signals:
     void loadingStart(QString msg);
     void loadingStop();
 
 public slots:
+    void deleteSession(QString sid);
+
     void refresh();
     void clear();
 
