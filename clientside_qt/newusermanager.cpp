@@ -2,7 +2,13 @@
 
 NewUserManager::NewUserManager(QObject *parent) : QObject(parent)
 {
-    nm = new QNetworkAccessManager(this);
+
+}
+
+NewUserManager* NewUserManager::linkUp(NetworkManager* nm, LoadingManager* lm)
+{
+    this->nm = nm;
+    this->lm = lm;
 }
 
 bool NewUserManager::testUsernameEmail(QString username) {
@@ -13,36 +19,19 @@ bool NewUserManager::testUsernameEmail(QString username) {
 }
 
 bool NewUserManager::testUsernameUnique(QString username) {
-    QNetworkRequest request;
-    request.setUrl(QUrl("https://telepool-144405.appspot.com/api/v0/test_un_uniq"));
-    request.setRawHeader("Content-Type", "application/json");
-
-    return true;
+    return (username != "");
 }
 
 void NewUserManager::createUser(QString email, QString password)
 {
     emit loadingStart("Creating new account...");
-    // Prepare network request.
-    QNetworkRequest request;
-    request.setUrl(QUrl("https://telepool-144405.appspot.com/api/v1/create_user"));
-    request.setRawHeader("Content-Type", "application/json");
 
     QJsonObject dataObj;
     dataObj["email"] = QJsonValue(email);
     dataObj["password"] = QJsonValue(password);
 
     // Send Request.
-    QNetworkReply* reply = nm->post(request, QJsonDocument(dataObj).toJson());
-
-    // Wait for Network Reply.
-    QEventLoop loop;
-    connect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
-    loop.exec();
-
-    // Read network reply.
-    QJsonObject replyObj = QJsonDocument::fromJson(reply->readAll()).object();
-    reply->deleteLater();
+    QJsonObject replyObj = nm->jsonPost(QUrl("https://telepool-144405.appspot.com/api/v1/create_user"), dataObj);
 
     // Get reply status.
     QString status = replyObj["status"].toString().trimmed();

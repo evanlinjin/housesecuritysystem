@@ -44,7 +44,7 @@ PageSettingsHomeForm {
                 }
             }
         }
-        model: Session.genSessionsModel(this)
+        model: Homeseed.genSessionsModel(this)
         section {
             property: "sessionType"
             delegate: ComponentListSectionTitle {
@@ -55,8 +55,6 @@ PageSettingsHomeForm {
 
     Component.onCompleted: {
         loading.showCancelButton()
-        listView.model.onLoadingStart.connect(loading.start)
-        listView.model.onLoadingStop.connect(loading.stop)
         listView.model.refresh();
     }
 

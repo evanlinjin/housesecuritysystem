@@ -5,11 +5,10 @@
 #include <QtQuickControls2/QQuickStyle>
 #include <QtDebug>
 
-#include "keyreceiver.h"
-#include "sessionmanager.h"
-#include "messagereceiver.h"
+#include "homeseed.h"
+//#include "messagereceiver.h"
+#include "loadingmanager.h"
 #include "newusermanager.h"
-#include "sessionmanager.h"
 
 int main(int argc, char *argv[])
 {
@@ -24,15 +23,14 @@ int main(int argc, char *argv[])
     QQmlContext* qc = engine.rootContext();
 
     // Generated objects.
-    SessionManager* sessionManager = new SessionManager("Qt App");
-    KeyReceiver* keyReceiver = new KeyReceiver();
+    Homeseed* homeseed = new Homeseed();
 
-    app.installEventFilter(keyReceiver);
-    qInfo() << "CLIENT INFO:" << sessionManager->getClientInfo();
+    app.installEventFilter(homeseed);
 
     // Expose generated objects.
-    qc->setContextProperty("KeyReceiver", keyReceiver);
-    qc->setContextProperty("Session", sessionManager);
+    qc->setContextProperty("Homeseed", homeseed);
+    qc->setContextProperty("Session", homeseed->session);
+    qc->setContextProperty("Loading", homeseed->loading);
 
     // Allow object generation in QML.
     qmlRegisterType<NewUserManager>("HSS", 1, 0, "NewUserManager");

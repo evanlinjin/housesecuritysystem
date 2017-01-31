@@ -13,7 +13,7 @@
         <file>TempToolbar.qml</file>
         <file>TempToolbarForm.ui.qml</file>
         <file>ComponentListItem.qml</file>
-        <file>Loading.qml</file>
+        <file>LoadingView.qml</file>
         <file>LoadingForm.ui.qml</file>
         <file>icons/account.svg</file>
         <file>icons/add.svg</file>

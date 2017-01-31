@@ -10,10 +10,11 @@ SessionsModel::~SessionsModel()
     qDebug() << "SessionsModel DELETED!";
 }
 
-SessionsModel *SessionsModel::linkUp(NetworkManager *n, SettingsManager *s)
+SessionsModel *SessionsModel::linkUp(NetworkManager *n, SessionManager* session, LoadingManager *lm)
 {
+    this->session = session;
     nm = n;
-    settings = s;
+    this->lm = lm;
     return this;
 }
 
@@ -84,7 +85,7 @@ void SessionsModel::displaySessions(QJsonArray &array)
         item.lastSeenTime = sObj["last_seen_time"].toInt();
         item.client = sObj["client"].toString();
 
-        if (item.sessionID == settings->getString("session/sid")) {
+        if (item.sessionID == session->sid()) {
             item.sessionType = "Current Session";
 
             if (i > 0) {
@@ -107,21 +108,21 @@ void SessionsModel::displaySessions(QJsonArray &array)
 
 void SessionsModel::deleteSession(QString sid)
 {
-    emit loadingStart("Deleting Session...");
+    emit lm->loadingStart("Deleting session...", false);
 
     QJsonArray dataArray;
     dataArray.append(QJsonValue(sid));
 
     QJsonObject dataObj;
-    dataObj["user_id"] = QJsonValue(settings->value("session/uid").toString());
-    dataObj["session_id"] = QJsonValue(settings->value("session/sid").toString());
-    dataObj["session_key"] = QJsonValue(settings->value("session/skey").toString());
+
+    dataObj["user_id"] = QJsonValue(session->uid());
+    dataObj["session_id"] = QJsonValue(session->sid());
+    dataObj["session_key"] = QJsonValue(session->skey());
     dataObj["sessions_to_delete"] = QJsonValue(dataArray);
 
     QJsonObject replyObj = nm->jsonPost(QUrl("https://telepool-144405.appspot.com/api/v1/delete_user_sessions"), dataObj);
 
     // Get reply status.
-    emit loadingStart("Processing Data...");
     QString status = replyObj["status"].toString().trimmed();
 
     if (status == "SUCCESS" || status == "OKAY")
@@ -130,32 +131,31 @@ void SessionsModel::deleteSession(QString sid)
         displaySessions(array);
     }
 
-    emit loadingStop();
+    emit lm->loadingStop();
     return;
 }
 
 void SessionsModel::deleteAllOtherSessions()
 {
-    emit loadingStart("Deleting Sessions...");
+    emit lm->loadingStart("Deleting Sessions...", false);
 
     QJsonArray dataArray;
     for (int i = 0; i < m_sessions.count(); i++) {
         QString sid = m_sessions[i].sessionID;
-        if (sid != settings->value("session/sid").toString()) {
+        if (sid != session->sid()) {
             dataArray.append(QJsonValue(sid));
         }
     }
 
     QJsonObject dataObj;
-    dataObj["user_id"] = QJsonValue(settings->value("session/uid").toString());
-    dataObj["session_id"] = QJsonValue(settings->value("session/sid").toString());
-    dataObj["session_key"] = QJsonValue(settings->value("session/skey").toString());
+    dataObj["user_id"] = QJsonValue(session->uid());
+    dataObj["session_id"] = QJsonValue(session->sid());
+    dataObj["session_key"] = QJsonValue(session->skey());
     dataObj["sessions_to_delete"] = QJsonValue(dataArray);
 
     QJsonObject replyObj = nm->jsonPost(QUrl("https://telepool-144405.appspot.com/api/v1/delete_user_sessions"), dataObj);
 
     // Get reply status.
-    emit loadingStart("Processing Data...");
     QString status = replyObj["status"].toString().trimmed();
 
     if (status == "SUCCESS" || status == "OKAY")
@@ -164,25 +164,24 @@ void SessionsModel::deleteAllOtherSessions()
         displaySessions(array);
     }
 
-    emit loadingStop();
+    emit lm->loadingStop();
     return;
 }
 
 
 void SessionsModel::refresh()
 {
-    emit loadingStart("Retrieving Data...");
+    emit lm->loadingStart("Retrieving Data...", true);
 
     QJsonObject dataObj;
-    dataObj["user_id"] = QJsonValue(settings->value("session/uid").toString());
-    dataObj["session_id"] = QJsonValue(settings->value("session/sid").toString());
-    dataObj["session_key"] = QJsonValue(settings->value("session/skey").toString());
+    dataObj["user_id"] = QJsonValue(session->uid());
+    dataObj["session_id"] = QJsonValue(session->sid());
+    dataObj["session_key"] = QJsonValue(session->skey());
 
     // Send Request.
     QJsonObject replyObj = nm->jsonPost(QUrl("https://telepool-144405.appspot.com/api/v1/list_user_sessions"), dataObj);
 
     // Get reply status.
-    emit loadingStart("Processing Data...");
     QString status = replyObj["status"].toString().trimmed();
 
     if (status == "SUCCESS" || status == "OKAY")
@@ -191,7 +190,7 @@ void SessionsModel::refresh()
         displaySessions(array);
     }
 
-    emit loadingStop();
+    emit lm->loadingStop();
     return;
 }
 

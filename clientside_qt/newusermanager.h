@@ -9,19 +9,22 @@
 #include <QJsonDocument>
 #include <QEventLoop>
 
+#include "networkmanager.h"
+#include "loadingmanager.h"
+
 class NewUserManager : public QObject
 {
     Q_OBJECT
 public:
     explicit NewUserManager(QObject *parent = 0);
+    NewUserManager* linkUp(NetworkManager* nm, LoadingManager* lm);
 
 private:
-    QNetworkAccessManager* nm;
+    NetworkManager* nm;
+    LoadingManager* lm;
 
 signals:
     void createUserComplete(QString msg);
-    void loadingStart(QString msg);
-    void loadingStop();
 
 public slots:
     bool testUsernameEmail(QString username);

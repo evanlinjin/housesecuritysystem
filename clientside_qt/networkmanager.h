@@ -14,7 +14,7 @@ class NetworkManager : public QNetworkAccessManager
 {
     Q_OBJECT
 public:
-    explicit NetworkManager();
+    explicit NetworkManager(QObject *parent = 0);
 
     QNetworkReply* post(const QNetworkRequest &request, const QByteArray &data);
     QJsonObject jsonPost(const QUrl &url, const QJsonObject &requestObj);

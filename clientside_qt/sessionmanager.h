@@ -2,23 +2,21 @@
 #define SESSIONMANAGER_H
 
 #include <QObject>
-#include <QJsonObject>
-#include <QJsonDocument>
-#include <QEventLoop>
-#include <QSysInfo>
 
 #include "networkmanager.h"
 #include "settingsmanager.h"
-#include "models/sessionsmodel.h"
+#include "loadingmanager.h"
 
-#define S_PROPERTY(TYPE,NAME) Q_PROPERTY(TYPE NAME READ NAME WRITE NAME NOTIFY sessionParamChanged)
-#define S_WRITE(TYPE,NAME) void NAME(const TYPE& a) {settings->setValue(QString("session/%1").arg(#NAME),a); emit sessionParamChanged();}
-#define S_READ(TYPE,NAME,FUNC) TYPE NAME() const {return settings->FUNC(QString("session/%1").arg(#NAME));}
+#define S_PROPERTY(TYPE,NAME) Q_PROPERTY(TYPE NAME READ NAME WRITE NAME NOTIFY paramChanged)
+#define S_WRITE(TYPE,NAME) void NAME(const TYPE& a) {sm->setValue(QString("session/%1").arg(#NAME),a); emit paramChanged();}
+#define S_READ(TYPE,NAME,FUNC) TYPE NAME() const {return sm->FUNC(QString("session/%1").arg(#NAME));}
 #define S_QML_EXPOSE(TYPE,FUNC,NAME) S_PROPERTY(TYPE,NAME) S_READ(TYPE,NAME,FUNC) S_WRITE(TYPE,NAME)
 
 class SessionManager : public QObject
 {
     Q_OBJECT
+    Q_PROPERTY(bool isLoggedIn READ isLoggedIn NOTIFY isLoggedInChanged)
+public:
     S_QML_EXPOSE(QString, getString, uid) // User ID
     S_QML_EXPOSE(QString, getString, email) // Email
     S_QML_EXPOSE(QString, getString, sid) // Session ID
@@ -28,33 +26,26 @@ class SessionManager : public QObject
     S_QML_EXPOSE(int, getInt, lastSeenTime) // Last Seen Time
 
 public:
-    explicit SessionManager(QString appStr, QObject *parent = 0);
-    ~SessionManager();
+    explicit SessionManager(QObject *parent = 0);
+    SessionManager* linkUp(SettingsManager* sm, NetworkManager* nm, LoadingManager* lm);
+
+    bool isLoggedIn() const;
 
 private:
-    SettingsManager* settings;
+    SettingsManager* sm;
     NetworkManager* nm;
-    QString appName, appVersion, appStr;
+    LoadingManager* lm;
 
 signals:
-    void sessionParamChanged();
-
-    void loggedIn();
-    void loggedOut();
-
-    void loadingStart(QString msg);
-    void loadingStop();
+    void paramChanged();
+    void isLoggedInChanged();
 
 public slots:
     QString getClientInfo();
 
-    bool login(QString email, QString password);
-    bool logout();
-    bool isLoggedIn();
+    void login(QString email, QString password);
+    void logout();
 
-    void abortAll();
-
-    SessionsModel* genSessionsModel(QObject *parent = 0);
 };
 
 #endif // SESSIONMANAGER_H

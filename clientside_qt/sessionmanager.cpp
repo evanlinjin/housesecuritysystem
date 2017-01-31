@@ -1,15 +1,22 @@
 #include "sessionmanager.h"
 
-SessionManager::SessionManager(QString appStr, QObject *parent) : QObject(parent), appStr(appStr)
+SessionManager::SessionManager(QObject *parent) : QObject(parent)
 {
-    nm = new NetworkManager();
-    settings = new SettingsManager("Gooseberry", "House Security System", this);
+
 }
 
-SessionManager::~SessionManager()
+SessionManager* SessionManager::linkUp(SettingsManager* sm, NetworkManager* nm, LoadingManager *lm)
 {
-    settings->deleteLater();
-    nm->deleteLater();
+    this->sm = sm;
+    this->nm = nm;
+    this->lm = lm;
+    return this;
+}
+
+// Read "isLoggedIn".
+bool SessionManager::isLoggedIn() const
+{
+    return (uid() != "" && sid() != "");
 }
 
 QString SessionManager::getClientInfo()
@@ -18,12 +25,12 @@ QString SessionManager::getClientInfo()
     QString osVersion(QSysInfo::productVersion());
     osName[0] = osName[0].toUpper();
 
-    return QString("%1 on %2 %3").arg(appStr, osName, osVersion);
+    return QString("%1 on %2 %3").arg("Qt Android App", osName, osVersion);
 }
 
-bool SessionManager::login(QString email, QString password)
+void SessionManager::login(QString email, QString password)
 {
-    emit loadingStart("Logging in...");
+    lm->loadingStart("Logging in...", false);
 
     QJsonObject dataObj;
     dataObj["email"] = QJsonValue(email);
@@ -45,23 +52,16 @@ bool SessionManager::login(QString email, QString password)
         this->loginTime(replyObj["login_time"].toInt());
         this->lastSeenTime(replyObj["last_seen_time"].toInt());
 
-        emit loggedIn();
-        emit loadingStop();
-        return true;
     }
 
-    emit loadingStop();
-    return false;
+    emit isLoggedInChanged();
+    lm->loadingStop();
 }
 
-bool SessionManager::logout()
+void SessionManager::logout()
 {
-    emit loadingStart("Logging out...");
-    if (this->isLoggedIn() == false) {
-        emit loggedOut();
-        emit loadingStop();
-        return true;
-    }
+    if (this->isLoggedIn() == false) { return; }
+    lm->loadingStart("Logging out...", false);
 
     QJsonObject dataObj;
     dataObj["user_id"] = QJsonValue(uid());
@@ -83,29 +83,8 @@ bool SessionManager::logout()
         this->client("");
         this->loginTime(0);
         this->lastSeenTime(0);
-
-        emit loggedOut();
-        emit loadingStop();
-        return true;
     }
 
-    emit loadingStop();
-    return false;
-}
-
-bool SessionManager::isLoggedIn()
-{
-    return (uid() != "" && sid() != "");
-}
-
-void SessionManager::abortAll()
-{
-    emit nm->abort();
-    emit loadingStop();
-}
-
-SessionsModel* SessionManager::genSessionsModel(QObject *parent)
-{
-    SessionsModel* temp = new SessionsModel(parent);
-    return temp->linkUp(nm, settings);
+    emit isLoggedInChanged();
+    lm->loadingStop();
 }

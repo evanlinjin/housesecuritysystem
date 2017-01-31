@@ -1,6 +1,6 @@
 #include "networkmanager.h"
 
-NetworkManager::NetworkManager()
+NetworkManager::NetworkManager(QObject *parent) : QNetworkAccessManager(parent)
 {
 
 }

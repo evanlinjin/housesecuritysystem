@@ -21,7 +21,7 @@ ApplicationWindow {
     StackView {
         id: stack
         anchors.fill: parent
-        initialItem: Session.isLoggedIn() ? pageHome : pageLogin
+        initialItem: Session.isLoggedIn ? pageHome : pageLogin
     }
 
     Component {
@@ -49,31 +49,26 @@ ApplicationWindow {
         PageSettingsSessions{ Component.onCompleted: loading.stop() }
     }
 
-    Loading {
+    LoadingView {
         id: loading
     }
 
     Component.onCompleted: {
-        Session.onLoggedIn.connect(gotoHomePage)
-        Session.onLoggedOut.connect(gotoLoginPage)
-        Session.onLoadingStart.connect(loading.start)
-        Session.onLoadingStop.connect(loading.stop)
+        Loading.onLoadingStart.connect(loading.start)
+        Loading.onLoadingStop.connect(loading.stop)
 
-        KeyReceiver.popStack.connect(stack.pop)
-        stack.onDepthChanged.connect(tellKrAboutStackDepth)
+        Session.onIsLoggedInChanged.connect(gotoHomeOrLogin)
+
+        Homeseed.onPopPageStack.connect(stack.pop)
+        stack.onDepthChanged.connect(changeStackDepth)
     }
 
-    function gotoHomePage() {
+    function gotoHomeOrLogin() {
         stack.clear()
-        stack.push(pageHome)
+        stack.push(Session.isLoggedIn ? pageHome : pageLogin)
     }
 
-    function gotoLoginPage() {
-        stack.clear()
-        stack.push(pageLogin)
-    }
-
-    function tellKrAboutStackDepth() {
-        KeyReceiver.updateStackDepth(stack.depth)
+    function changeStackDepth() {
+        Homeseed.stackDepth = stack.depth
     }
 }

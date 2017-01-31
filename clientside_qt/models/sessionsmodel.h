@@ -15,8 +15,9 @@
 #include <QCoreApplication>
 #include <QDebug>
 
-#include "settingsmanager.h"
+#include "loadingmanager.h"
 #include "networkmanager.h"
+#include "sessionmanager.h"
 
 struct SessionItem {
     QString sessionID;
@@ -43,14 +44,15 @@ public:
 
     explicit SessionsModel(QObject *parent = 0);
     ~SessionsModel();
-    SessionsModel* linkUp(NetworkManager* n, SettingsManager *s);
+    SessionsModel* linkUp(NetworkManager* n, SessionManager *session, LoadingManager* lm);
 
     int rowCount(const QModelIndex & parent = QModelIndex()) const;
     QVariant data(const QModelIndex & index, int role = Qt::DisplayRole) const;
 
 private:
-    SettingsManager* settings;
+    SessionManager* session;
     NetworkManager* nm;
+    LoadingManager* lm;
 
     QList<SessionItem> m_sessions;
 
@@ -58,8 +60,6 @@ private:
     void displaySessions(QJsonArray &array);
 
 signals:
-    void loadingStart(QString msg);
-    void loadingStop();
 
 public slots:
     void deleteSession(QString sid);
