@@ -78,7 +78,7 @@ void Homeseed::abortAll()
 NewUserManager* Homeseed::genNewUserManager(QObject *parent)
 {
     NewUserManager* temp = new NewUserManager(parent);
-    return temp->linkUp(network, loading);
+    return temp->linkUp(network, session, loading);
 }
 
 SessionsModel* Homeseed::genSessionsModel(QObject *parent)

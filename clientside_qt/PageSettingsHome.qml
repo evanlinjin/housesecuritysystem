@@ -13,6 +13,11 @@ PageSettingsHomeForm {
             onClicked: stack.push(pageSettingsSessions)
         }
         ComponentListItem {
+            ln1: "Change Account Password"
+            onClicked: stack.push(pageSettingsChangePassword)
+        }
+
+        ComponentListItem {
             ln1: "Log Out"
             onClicked: openLogoutPopup()
         }

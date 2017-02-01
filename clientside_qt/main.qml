@@ -28,6 +28,7 @@ ApplicationWindow {
     Component { id: pageHome; PageHome{} }
     Component { id: pageSettingsHome; PageSettingsHome{} }
     Component { id: pageSettingsSessions; PageSettingsSessions{} }
+    Component { id: pageSettingsChangePassword; PageSettingsChangePassword{} }
 
     LoadingView {
         id: loading

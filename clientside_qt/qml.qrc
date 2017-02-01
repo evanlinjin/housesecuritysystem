@@ -43,5 +43,7 @@
         <file>PageSettingsSessions.qml</file>
         <file>ComponentListSectionTitle.qml</file>
         <file>ComponentsListSessionsItem.qml</file>
+        <file>PageSettingsChangePassword.qml</file>
+        <file>PageSettingsChangePasswordForm.ui.qml</file>
     </qresource>
 </RCC>
