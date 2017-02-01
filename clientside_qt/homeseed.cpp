@@ -8,6 +8,8 @@ Homeseed::Homeseed(QObject *parent) : QObject(parent)
     loading = new LoadingManager(this);
 
     session->linkUp(settings, network, loading);
+
+    m_stackDepth = 1;
 }
 
 Homeseed::~Homeseed()

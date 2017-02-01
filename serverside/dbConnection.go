@@ -301,6 +301,19 @@ func (c *DbConnection) GetUserSessions(uid, sid string) (a []Session, e error) {
 	return
 }
 
+// ChangeAccountPassword changes the account password for provided user.
+func (c *DbConnection) ChangeAccountPassword(uid, newPassword string) (e error) {
+	// Create new account variables.
+	pwSalt := generateRandomString(LENGTHPASSWORDSALT)
+	pwHash, _ := bcrypt.GenerateFromPassword([]byte(newPassword+pwSalt), 10)
+
+	_, e = c.Db.Exec(
+		"UPDATE Users SET passwordSalt = ?, passwordHash = ? WHERE uid = ?",
+		pwSalt, pwHash, uid,
+	)
+	return
+}
+
 // Session represents a user session.
 type Session struct {
 	SessionID      string `json:"session_id"`

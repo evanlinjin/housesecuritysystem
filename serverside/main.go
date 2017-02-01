@@ -24,6 +24,8 @@ func init() {
 
 	http.HandleFunc(apiv1("list_user_sessions"), getUserSessionsHandleV1)
 	http.HandleFunc(apiv1("delete_user_sessions"), deleteUserSessionsHandleV1)
+
+	http.HandleFunc(apiv1("change_user_password"), changeUserPasswordHandleV1)
 }
 
 /******************************************************************************/
