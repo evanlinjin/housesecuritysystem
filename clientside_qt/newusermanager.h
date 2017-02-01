@@ -2,12 +2,8 @@
 #define NEWUSERMANAGER_H
 
 #include <QObject>
-#include <QNetworkAccessManager>
-#include <QNetworkRequest>
-#include <QNetworkReply>
 #include <QJsonObject>
-#include <QJsonDocument>
-#include <QEventLoop>
+#include <QDebug>
 
 #include "networkmanager.h"
 #include "loadingmanager.h"
@@ -17,6 +13,7 @@ class NewUserManager : public QObject
     Q_OBJECT
 public:
     explicit NewUserManager(QObject *parent = 0);
+    ~NewUserManager();
     NewUserManager* linkUp(NetworkManager* nm, LoadingManager* lm);
 
 private:

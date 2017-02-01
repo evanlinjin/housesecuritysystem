@@ -2,7 +2,12 @@
 
 NewUserManager::NewUserManager(QObject *parent) : QObject(parent)
 {
+    qDebug() << "OBJECT CREATED: NewUserManager";
+}
 
+NewUserManager::~NewUserManager()
+{
+    qDebug() << "OBJECT DELETED: NewUserManager";
 }
 
 NewUserManager* NewUserManager::linkUp(NetworkManager* nm, LoadingManager* lm)
@@ -24,7 +29,7 @@ bool NewUserManager::testUsernameUnique(QString username) {
 
 void NewUserManager::createUser(QString email, QString password)
 {
-    emit loadingStart("Creating new account...");
+    emit lm->loadingStart("Creating new account...", false);
 
     QJsonObject dataObj;
     dataObj["email"] = QJsonValue(email);
@@ -41,5 +46,5 @@ void NewUserManager::createUser(QString email, QString password)
                 + email + " to enable it!";
     }
     emit createUserComplete(status);
-    emit loadingStop();
+    emit lm->loadingStop();
 }

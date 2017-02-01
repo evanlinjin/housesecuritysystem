@@ -50,6 +50,12 @@ void Homeseed::abortAll()
     emit loading->loadingStop();
 }
 
+NewUserManager* Homeseed::genNewUserManager(QObject *parent) const
+{
+    NewUserManager* temp = new NewUserManager(parent);
+    return temp->linkUp(network, loading);
+}
+
 SessionsModel* Homeseed::genSessionsModel(QObject *parent)
 {
     SessionsModel* temp = new SessionsModel(parent);

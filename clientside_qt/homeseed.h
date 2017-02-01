@@ -12,6 +12,7 @@
 #include "settingsmanager.h"
 #include "sessionmanager.h"
 #include "loadingmanager.h"
+#include "newusermanager.h"
 
 #include "models/sessionsmodel.h"
 
@@ -45,6 +46,7 @@ signals:
 public slots:
     void abortAll();
 
+    NewUserManager* genNewUserManager(QObject *parent = 0) const;
     SessionsModel* genSessionsModel(QObject *parent = 0);
 };
 

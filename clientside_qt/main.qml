@@ -17,48 +17,35 @@ ApplicationWindow {
     Universal.theme: Universal.Dark
     Universal.accent: Universal.Cyan
 
-
     StackView {
         id: stack
         anchors.fill: parent
         initialItem: Session.isLoggedIn ? pageHome : pageLogin
     }
 
-    Component {
-        id: pageLogin
-        PageLogin{ Component.onCompleted: loading.stop() }
-    }
-
-    Component {
-        id: pageNewUser
-        PageNewUser{ Component.onCompleted: loading.stop() }
-    }
-
-    Component {
-        id: pageHome
-        PageHome{ Component.onCompleted: loading.stop() }
-    }
-
-    Component {
-        id: pageSettingsHome
-        PageSettingsHome{ Component.onCompleted: loading.stop() }
-    }
-
-    Component {
-        id: pageSettingsSessions
-        PageSettingsSessions{ Component.onCompleted: loading.stop() }
-    }
+    Component { id: pageLogin; PageLogin{} }
+    Component { id: pageNewUser; PageNewUser{} }
+    Component { id: pageHome; PageHome{} }
+    Component { id: pageSettingsHome; PageSettingsHome{} }
+    Component { id: pageSettingsSessions; PageSettingsSessions{} }
 
     LoadingView {
         id: loading
     }
 
+    ComponentPopup {
+        id: popup
+    }
+
     Component.onCompleted: {
+        // LoadingView :
         Loading.onLoadingStart.connect(loading.start)
         Loading.onLoadingStop.connect(loading.stop)
 
+        // Session Login/Logout :
         Session.onIsLoggedInChanged.connect(gotoHomeOrLogin)
 
+        // Page Naviagation :
         Homeseed.onPopPageStack.connect(stack.pop)
         stack.onDepthChanged.connect(changeStackDepth)
     }

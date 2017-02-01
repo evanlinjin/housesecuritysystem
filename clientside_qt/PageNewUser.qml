@@ -36,13 +36,11 @@ PageNewUserForm {
         onClicked: stack.pop()
     }
 
-    NewUserManager {
-        id: newUserManager
-        Component.onCompleted: {
-            createUserComplete.connect(popup.openMsg)
-            loadingStart.connect(loading.start)
-            loadingStop.connect(loading.stop)
-        }
+    property NewUserManager newUserManager: Homeseed.genNewUserManager(this)
+
+    Connections {
+        target: newUserManager
+        onCreateUserComplete: popup.openMsg(msg)
     }
 
     ComponentPopup {
