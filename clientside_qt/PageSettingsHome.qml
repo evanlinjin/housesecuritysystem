@@ -14,18 +14,16 @@ PageSettingsHomeForm {
         }
         ComponentListItem {
             ln1: "Log Out"
-            onClicked: logoutPopup.open()
+            onClicked: openLogoutPopup()
         }
-
     }
 
-    ComponentPopup {
-        id: logoutPopup
-        titleText: "Logout Confirmation"
-        bodyText: "Are you sure you want to logout?"
-        confirmText: "Logout"
-        cancelText: "Cancel"
-        show2Buttons: true
-        confirmTrigger: Session.logout
+    function openLogoutPopup() {
+        popup.titleText = "Logout"
+        popup.bodyText = "Are you sure you want to logout of your current session?"
+        popup.confirmText = "Logout"
+        popup.cancelText = "Cancel"
+        popup.confirmTrigger = Session.logout
+        popup.open()
     }
 }

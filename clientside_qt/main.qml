@@ -35,6 +35,8 @@ ApplicationWindow {
 
     ComponentPopup {
         id: popup
+        onOpened: Homeseed.popupOpen = true
+        onClosed: Homeseed.popupOpen = false
     }
 
     Component.onCompleted: {
@@ -47,6 +49,7 @@ ApplicationWindow {
 
         // Page Naviagation :
         Homeseed.onPopPageStack.connect(stack.pop)
+        Homeseed.onClosePopup.connect(popup.close)
         stack.onDepthChanged.connect(changeStackDepth)
     }
 

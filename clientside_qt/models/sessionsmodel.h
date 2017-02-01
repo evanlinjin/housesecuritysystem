@@ -4,15 +4,8 @@
 #include <QObject>
 #include <QAbstractListModel>
 #include <QStringList>
-#include <QSettings>
-#include <QNetworkAccessManager>
-#include <QNetworkRequest>
-#include <QNetworkReply>
 #include <QJsonObject>
-#include <QJsonDocument>
 #include <QJsonArray>
-#include <QEventLoop>
-#include <QCoreApplication>
 #include <QDebug>
 
 #include "loadingmanager.h"

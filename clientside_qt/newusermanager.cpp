@@ -14,6 +14,7 @@ NewUserManager* NewUserManager::linkUp(NetworkManager* nm, LoadingManager* lm)
 {
     this->nm = nm;
     this->lm = lm;
+    return this;
 }
 
 bool NewUserManager::testUsernameEmail(QString username) {

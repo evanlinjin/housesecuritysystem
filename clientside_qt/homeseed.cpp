@@ -22,6 +22,7 @@ void Homeseed::stackDepth(const int &a)
 {
     if (a == m_stackDepth) { return; }
     m_stackDepth = a;
+    qDebug() << "STACK DEPTH:" << a;
     emit stackDepthChanged();
 }
 
@@ -30,12 +31,34 @@ int Homeseed::stackDepth() const
     return m_stackDepth;
 }
 
+void Homeseed::popupOpen(const bool &a)
+{
+    if (a == m_popupOpen) { return; }
+    m_popupOpen = a;
+    emit popupOpenChanged();
+}
+
+bool Homeseed::popupOpen() const
+{
+    return m_popupOpen;
+}
+
 bool Homeseed::eventFilter(QObject* obj, QEvent* event)
 {
     if (event->type() == QEvent::KeyRelease) {
         QKeyEvent* key = static_cast<QKeyEvent*>(event);
         if (key->key() == Qt::Key_Back || key->key() == Qt::Key_Escape) {
+            if (loading->active() == true) {
+                // Should something be done here?
+                return true;
+            }
+            if (popupOpen() == true) {
+                popupOpen(false);
+                emit closePopup();
+                return true;
+            }
             if (stackDepth() > 1) {
+                qDebug() << "EMITTING:" << "popPageStack";
                 emit popPageStack();
                 return true;
             }
@@ -50,7 +73,7 @@ void Homeseed::abortAll()
     emit loading->loadingStop();
 }
 
-NewUserManager* Homeseed::genNewUserManager(QObject *parent) const
+NewUserManager* Homeseed::genNewUserManager(QObject *parent)
 {
     NewUserManager* temp = new NewUserManager(parent);
     return temp->linkUp(network, loading);

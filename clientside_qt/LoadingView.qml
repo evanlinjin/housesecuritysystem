@@ -22,14 +22,18 @@ LoadingForm {
         cancelButton.enabled = true
     }
 
-    Connections {
-        target: cancelButton
-        onClicked: Session.abortAll()
+    Timer {
+        id: timer
+        running: false
+        repeat: false
+        interval: 5000 // 5 seconds.
+        onTriggered: cancelButton.visible = true
     }
 
     cancelButton {
         visible: false
         enabled: false
+        onClicked: Session.abortAll()
     }
 
     pane.onOpacityChanged: loading.visible = (pane.opacity !== 0.0)

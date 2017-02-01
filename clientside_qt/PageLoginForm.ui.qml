@@ -10,28 +10,10 @@ Item {
     property alias emailField: emailField
     property alias emailErrorText: emailErrorText
 
-    ToolBar {
-        id: toolBar
-        anchors.top: parent.top
-        anchors.topMargin: 0
-        anchors.right: parent.right
-        anchors.rightMargin: 0
-        anchors.left: parent.left
-        anchors.leftMargin: 0
-
-        Label {
-            id: heading
-            text: qsTr("House Secuirty Login")
-            anchors.fill: parent
-            verticalAlignment: Text.AlignVCenter
-            horizontalAlignment: Text.AlignHCenter
-        }
-    }
-
     ColumnLayout {
         id: columnLayout
-        anchors.top: toolBar.bottom
         anchors.topMargin: 10
+        anchors.top: toolbar.bottom
         anchors.bottom: parent.bottom
         anchors.bottomMargin: 10
         anchors.right: parent.right
@@ -65,7 +47,8 @@ Item {
                 id: emailField
                 text: qsTr("")
                 Layout.fillWidth: true
-                inputMethodHints: Qt.ImhEmailCharactersOnly | Qt.ImhLowercaseOnly | Qt.ImhNoAutoUppercase
+                inputMethodHints: Qt.ImhEmailCharactersOnly
+                                  | Qt.ImhLowercaseOnly | Qt.ImhNoAutoUppercase
             }
 
             Label {
@@ -104,5 +87,14 @@ Item {
                 anchors.fill: parent
             }
         }
+    }
+
+    TempToolbar {
+        id: toolbar
+        text: "Homeseed Login"
+        showBackIcon: false
+        anchors.right: parent.right
+        anchors.left: parent.left
+        anchors.top: parent.top
     }
 }

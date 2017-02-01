@@ -4,6 +4,14 @@ import QtQuick.Layouts 1.3
 import HSS 1.0
 
 PageNewUserForm {
+
+    property NewUserManager newUserManager
+
+    Component.onCompleted: {
+        newUserManager = Homeseed.genNewUserManager(this)
+        newUserManager.onCreateUserComplete.connect(openPopup)
+    }
+
     usernameField {
         onTextChanged: {
             usernameErrorText.visible = !newUserManager.testUsernameEmail(usernameField.text)
@@ -35,24 +43,13 @@ PageNewUserForm {
     closeButton {
         onClicked: stack.pop()
     }
-
-    property NewUserManager newUserManager: Homeseed.genNewUserManager(this)
-
-    Connections {
-        target: newUserManager
-        onCreateUserComplete: popup.openMsg(msg)
-    }
-
-    ComponentPopup {
-        id: popup
-        titleText: "Message"
-        cancelText: "Close"
-        onClosed: stack.pop()
-
-        function openMsg(msg) {
-            bodyText = msg
-            popup.open()
-        }
+    
+    function openPopup(msg) {
+        popup.titleText = "Message"
+        popup.bodyText = msg
+        popup.confirmText = ""
+        popup.cancelText = "Close"
+        popup.open()
     }
 
     function checkSubmitOkay() {

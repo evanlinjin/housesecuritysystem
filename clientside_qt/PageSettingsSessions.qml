@@ -58,36 +58,26 @@ PageSettingsHomeForm {
         listView.model.refresh();
     }
 
-    ComponentPopup {
-        id: deleteSessionPopup
-        cancelText: "Cancel"
-        show2Buttons: true
-    }
-
     function openDeleteSessionPopup(sname, sdesc, sid) {
-        deleteSessionPopup.titleText =
-                "Delete Session Confirmation"
-        deleteSessionPopup.bodyText =
-                ("Are you sure you want to delete this session?<br><br><h4>%1</h4>%2").arg(sname).arg(sdesc)
-        deleteSessionPopup.confirmText =
-                "Delete"
-        deleteSessionPopup.confirmTrigger = function() {
+        popup.titleText = "Delete Session Confirmation"
+        popup.bodyText = ("Are you sure you want to delete this session?<br><br><h4>%1</h4>%2").arg(sname).arg(sdesc)
+        popup.confirmText = "Delete"
+        popup.cancelText = "Cancel"
+        popup.confirmTrigger = function() {
             listView.model.deleteSession(sid)
         }
-        deleteSessionPopup.open()
+        popup.open()
     }
 
     function openDeleteAllOtherSessionsPopup() {
-        deleteSessionPopup.titleText =
-                "Delete All Other Sessions Confirmation"
-        deleteSessionPopup.bodyText =
-                "Are you sure you want to delete all other sessions?"
-        deleteSessionPopup.confirmText =
-                "Delete All"
-        deleteSessionPopup.confirmTrigger = function() {
+        popup.titleText = "Delete All Other Sessions Confirmation"
+        popup.bodyText = "Are you sure you want to delete all other sessions?"
+        popup.confirmText = "Delete All"
+        popup.cancelText = "Cancel"
+        popup.confirmTrigger = function() {
             listView.model.deleteAllOtherSessions()
         }
-        deleteSessionPopup.open()
+        popup.open()
     }
 
     function convTimePart(n) {

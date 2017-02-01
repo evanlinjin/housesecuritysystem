@@ -8,7 +8,7 @@ Popup {
     property alias bodyText: cp.bodyText
     property alias confirmText: cp.confirmText
     property alias cancelText: cp.cancelText
-    property bool show2Buttons: false
+//    property alias show2Buttons: cp.confirmButton.visible
     property var confirmTrigger
 
     modal: true
@@ -25,7 +25,8 @@ Popup {
             logoutPopup.close()
             confirmTrigger()
         }
-        confirmButton.visible: show2Buttons
+
+        confirmButton.visible: confirmText !== ""
         cancelButton.onClicked: logoutPopup.close()
     }
 
