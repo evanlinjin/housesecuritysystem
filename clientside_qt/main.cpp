@@ -5,6 +5,10 @@
 #include <QtQuickControls2/QQuickStyle>
 #include <QtDebug>
 
+#ifdef Q_OS_ANDROID
+#include <QtAndroidExtras/QtAndroid>
+#endif
+
 #include "homeseed.h"
 //#include "messagereceiver.h"
 #include "loadingmanager.h"
@@ -37,5 +41,8 @@ int main(int argc, char *argv[])
     qmlRegisterType<SessionsModel>("HSS", 1, 0, "SessionsModel");
 
     engine.load(QUrl(QLatin1String("qrc:/main.qml")));
+#ifdef Q_OS_ANDROID
+    QtAndroid::hideSplashScreen();
+#endif
     return app.exec();
 }

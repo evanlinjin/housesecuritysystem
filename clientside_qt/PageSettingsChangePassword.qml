@@ -66,6 +66,7 @@ PageSettingsChangePasswordForm {
     function submit() {
         if (checkSubmitOkay()) {
             manager.changePassword(currentPasswordField.text, newPasswordField.text)
+            stack.pop()
         }
     }
 }

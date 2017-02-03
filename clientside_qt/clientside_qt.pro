@@ -1,4 +1,4 @@
-QT += qml quick network core quickcontrols2 svg
+QT += qml quick network core quickcontrols2 svg androidextras
 
 CONFIG += c++11
 
@@ -8,7 +8,6 @@ HEADERS += ../c-core/qt/pubnub_qt.h \
     messagereceiver.h \
     keys.h \
     newusermanager.h \
-    keyreceiver.h \
     models/sessionsmodel.h \
     networkmanager.h \
     settingsmanager.h \
@@ -19,7 +18,6 @@ HEADERS += ../c-core/qt/pubnub_qt.h \
 SOURCES += main.cpp ../c-core/qt/pubnub_qt.cpp ../c-core/core/pubnub_ccore.c ../c-core/core/pubnub_assert_std.c ../c-core/core/pubnub_json_parse.c ../c-core/core/pubnub_helper.c \
     messagereceiver.cpp \
     newusermanager.cpp \
-    keyreceiver.cpp \
     models/sessionsmodel.cpp \
     networkmanager.cpp \
     settingsmanager.cpp \
