@@ -9,27 +9,14 @@
 #include <string>
 
 #include "imagehandler.h"
-#include "donemanager.h"
-
-bool isDone = false;
-
-void setDone() {
-    isDone = true;
-}
 
 int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
 
     ImageHandler* handle = new ImageHandler();
-    DoneManager* doner = new DoneManager();
 
-    QObject::connect(handle, SIGNAL(captureDone()),
-                     doner, SLOT(setDone()));
-
-//    while (doner->getDone() == false) {
-        handle->beginCapture();
-//    }
+    handle->beginCapture();
 
     return a.exec();
 }

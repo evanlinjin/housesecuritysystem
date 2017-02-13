@@ -13,6 +13,8 @@
 #include <iostream>
 #include <string>
 
+#include "imagesurface.h"
+
 class ImageHandler : public QObject
 {
     Q_OBJECT
@@ -23,8 +25,16 @@ private:
     QEventLoop loop;
 
     QCamera* camera;
-    QCameraImageCapture* imageCapture;
+    ImageSurface* imageSurface;
     bool cameraOn;
+
+    // Camera Info.
+    QCamera::LockTypes supportedLockTypes;
+    QList<QCamera::FrameRateRange> supportedFrameRateRanges;
+    QList<QVideoFrame::PixelFormat> supportedPixelFormats;
+    QList<QSize> supportedResolutions;
+    QList<QCameraViewfinderSettings> supportedSettings;
+
 
 signals:
     void captureDone();
@@ -36,9 +46,8 @@ public slots:
     void beginCapture();
 
 private slots:
-//    void processAvailable(int id, QVideoFrame frame);
-    void processCapture(int id, QImage img);
-    void captureError(int id, QCameraImageCapture::Error e, QString msg);
+    void getCameraInfo(QCamera::Status status);
+    void beginCaptureWhenReady(QCamera::Status status);
 };
 
 #endif // IMAGEHANDLER_H

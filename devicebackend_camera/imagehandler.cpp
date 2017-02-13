@@ -33,17 +33,13 @@ ImageHandler::ImageHandler(QObject *parent) : QObject(parent)
     }
 
     camera = new QCamera(cameras[cameraChoice], this);
-    imageCapture = new QCameraImageCapture(camera, this);
+    imageSurface = new ImageSurface(this);
 
-    camera->setCaptureMode(QCamera::CaptureStillImage);
+    camera->setViewfinder(imageSurface);
+    camera->setCaptureMode(QCamera::CaptureViewfinder);
     cameraOn = false;
 
-//    connect(imageCapture, SIGNAL(imageAvailable(int,QVideoFrame)),
-//            this, SLOT(processAvailable(int,QVideoFrame)));
-        connect(imageCapture, SIGNAL(imageCaptured(int,QImage)),
-                this, SLOT(processCapture(int,QImage)));
-    connect(imageCapture, SIGNAL(error(int,QCameraImageCapture::Error,QString)),
-            this, SLOT(captureError(int,QCameraImageCapture::Error,QString)));
+    connect(camera, SIGNAL(statusChanged(QCamera::Status)), this, SLOT(getCameraInfo(QCamera::Status)));
 }
 
 void ImageHandler::turnCameraOn()
@@ -65,39 +61,49 @@ void ImageHandler::turnCameraOff()
 void ImageHandler::beginCapture()
 {
     turnCameraOn();
-    //    camera->searchAndLock();
-    //    connect(imageCapture, SIGNAL(readyForCaptureChanged(bool)), this, SLOT(doCapture(bool)));
-    connect(imageCapture, SIGNAL(readyForCaptureChanged(bool)), &loop, SLOT(quit()));
-    loop.exec();
+}
 
-    while (true) {
-        imageCapture->capture();
-        QTimer::singleShot(1000, &loop, SLOT(quit()));
-        loop.exec();
+void ImageHandler::getCameraInfo(QCamera::Status status)
+{
+    if (status != QCamera::ActiveStatus) return;
+
+    supportedLockTypes = camera->supportedLocks();
+    supportedFrameRateRanges = camera->supportedViewfinderFrameRateRanges();
+    supportedPixelFormats = camera->supportedViewfinderPixelFormats();
+    supportedResolutions = camera->supportedViewfinderResolutions();
+    supportedSettings = camera->supportedViewfinderSettings();
+
+    QString sfrrTemp;
+    for (int i = 0; i < supportedFrameRateRanges.count(); i++) {
+        sfrrTemp.append("(");
+        sfrrTemp.append(QString::number(supportedFrameRateRanges.at(i).minimumFrameRate));
+        sfrrTemp.append(", ");
+        sfrrTemp.append(QString::number(supportedFrameRateRanges.at(i).maximumFrameRate));
+        sfrrTemp.append(i < supportedFrameRateRanges.count()-1 ? "), " : ")");
     }
 
-    //    camera->unlock();
+    QString ssTemp;
+    for (int i = 0; i < supportedSettings.count(); i++) {
+        ssTemp.append("(");
+        ssTemp.append(QString::number(supportedSettings.at(i).maximumFrameRate()));
+        ssTemp.append(", ");
+        ssTemp.append(QString::number(supportedSettings.at(i).minimumFrameRate()));
+        ssTemp.append(", ");
+        ssTemp.append(QString::number(supportedSettings.at(i).pixelAspectRatio().height()));
+        ssTemp.append(", ");
+        ssTemp.append(QString::number(supportedSettings.at(i).pixelAspectRatio().width()));
+
+        ssTemp.append(i < supportedSettings.count()-1 ? "), " : ")");
+    }
+
+    qInfo() << "SUPPORTED LOCKS:" << supportedLockTypes;
+    qInfo() << "SUPPORTED FRAME RATES:" << sfrrTemp;
+    qInfo() << "SUPPORTED PIXEL FORMATS:" << supportedPixelFormats;
+    qInfo() << "SUPPORTED RESOLUTIONS:" << supportedResolutions;
+    qInfo() << "SUPPORTED SETTINGS:" << ssTemp;
 }
 
-//void ImageHandler::processAvailable(int id, QVideoFrame frame)
-//{
-//    qInfo() << "[FRAME AVALIABLE] id:" << id << ", frame:", frame.bits();
-
-//    QImage::Format format = QVideoFrame::imageFormatFromPixelFormat(frame.pixelFormat());
-
-//    QImage img(frame.bits(), frame.width(), frame.height(), frame.bytesPerLine(), format);
-//    img.save(QString("~"), nullptr, 5);
-
-//    emit captureDone();
-//}
-
-void ImageHandler::processCapture(int id, QImage img)
+void ImageHandler::beginCaptureWhenReady(QCamera::Status status)
 {
-    qInfo() << "[IMAGE CAPTURED] id:" << id << ", img:" << img.bits();
-    emit captureDone();
-}
-
-void ImageHandler::captureError(int id, QCameraImageCapture::Error e, QString msg)
-{
-    qInfo() << "[CAPTURE ERROR] id:" << id << ", error:" << e << ", msg:" << msg;
+    if (status != QCamera::ActiveStatus) return;
 }

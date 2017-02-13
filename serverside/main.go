@@ -2,10 +2,12 @@ package main
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
 	"net/http"
+	"strings"
 
 	"google.golang.org/appengine"
 	"google.golang.org/appengine/log"
@@ -26,6 +28,50 @@ func init() {
 	http.HandleFunc(apiv1("delete_user_sessions"), deleteUserSessionsHandleV1)
 
 	http.HandleFunc(apiv1("change_user_password"), changeUserPasswordHandleV1)
+
+	http.HandleFunc(apiv1("test_datastore"), testDatastoreHandleV1)
+
+	// New Handlers.
+	http.HandleFunc("/api/v2", handlerV2)
+	http.HandleFunc("/api/v2/activate_user/", activateUserHandlerV2)
+}
+
+func handlerV2(w http.ResponseWriter, r *http.Request) {
+	h, e := CreateHandle(w, r)
+	if e != nil {
+		h.SendInternalServerError(e)
+	}
+
+	unmarshalRequestBody(h.W, readRequestBody(h.R), h.Request)
+
+	switch h.Request.Action {
+	case "create_user":
+		h.CreateUser()
+	default:
+		h.SendBadRequestError(errors.New("invalid request"))
+	}
+}
+
+func activateUserHandlerV2(w http.ResponseWriter, r *http.Request) {
+	h, e := CreateHandle(w, r)
+	if e != nil {
+		h.SendInternalServerError(e)
+	}
+
+	// Analyse path to obtain uid & keyPass.
+	path := r.URL.EscapedPath()
+	strArray := strings.Split(path[strings.LastIndex(path, "/")+1:], "+")
+	userID, activationKey := strArray[0], strArray[1]
+
+	// Activate User.
+	e = h.C.ActivateUser(userID, activationKey)
+	if e != nil {
+		h.SendUnauthorizedError(e)
+	}
+
+	h.Response.Okay = true
+	h.Response.Content["activated"] = interface{}(true)
+	sendResponse(w, h.Response, http.StatusOK)
 }
 
 /******************************************************************************/
